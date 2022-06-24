@@ -1,0 +1,21 @@
+.main-wrapper {
+    background-image: url("../../images/classroom-bg1.jpg");
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    .wrapper-navbar {
+        height: 50px;
+        .active-tab {
+            color: white;
+            cursor: pointer;
+        }
+        .inactive-tab {
+            color: grey;
+            cursor: pointer;
+        }
+        .back-btn {
+            color: white;
+            cursor: pointer;
+        }
+    }
+}

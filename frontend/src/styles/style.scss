@@ -1,0 +1,79 @@
+@import "../../node_modules/bootstrap/scss/bootstrap.scss";
+
+@import "../pages/welcome/Welcome";
+@import "../pages/landing/Landing";
+@import "../pages/wrapper/Wrapper";
+@import "../pages/landingOptions/LandingOptions";
+@import "../components/authModal/AuthModal";
+
+/* width */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #888;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+.circle-check {
+  color: green;
+  font-size: 40px;
+  margin-top: 60px;
+}
+
+.times-circle {
+  color: red;
+  font-size: 40px;
+  margin-top: 60px;
+}
+
+.wrapper-container {
+  display: flex;
+  .side-content {
+    width: 20%;
+    height: 100vh;
+    background-color: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(2px);
+  }
+  .main-content {
+    width: 60%;
+    height: 100vh;
+  }
+  @media screen and (max-width: 600px) {
+    .side-content {
+      display: none;
+    }
+    .main-content {
+      width: 100%;
+    }
+  }
+}
+
+.form-container {
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: 40px 50px;
+  .form-label {
+    font-size: 20px;
+    font-weight: 600;
+  }
+  .form-btn-container {
+    text-align: center;
+  }
+}
+
+.toast-stack-vertical {
+  display: flex;
+  flex-direction: column;
+}

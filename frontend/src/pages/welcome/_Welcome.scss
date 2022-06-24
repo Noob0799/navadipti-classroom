@@ -1,0 +1,19 @@
+.welcome-container {
+    background-image: url("../../images/pencil-bg.jfif");
+    background-position: right center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    height: 100vh;
+    .school-details {
+        text-align: center;
+        padding: 30px 50px;
+        color: whitesmoke;
+        background-color: rgba(0, 0, 0, 0.5);
+    }
+    .welcome-btn-container {
+        margin-top: 100px;
+        button {
+            margin-bottom: 10px;
+        }
+    }
+}

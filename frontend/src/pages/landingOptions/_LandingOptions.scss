@@ -1,0 +1,11 @@
+.classroom-options-container {
+    display: flex;
+    flex-direction: column;
+    padding: 120px 20%;
+    .classroom-options {
+        margin: 15px 0;
+        background-color: beige;
+        font-weight: 600;
+        box-shadow: 0 0 7px 4px black;
+    }
+}
