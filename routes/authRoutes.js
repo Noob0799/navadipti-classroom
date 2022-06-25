@@ -6,12 +6,14 @@ const jwtgenerator = require("../utils/jwtgenerator");
 
 router.post("/validate", async (req, res) => {
   try {
+    await pool.query('BEGIN');
     const { role, phoneNumber, password } = req.body;
     const user = await pool.query(
       `SELECT * FROM ${role} where ${role}_phone = $1`,
       [phoneNumber]
     );
     if (!user.rows.length) {
+      await pool.query('ROLLBACK');
       res
         .status(401)
         .json({ status: "Failure", message: "User phone number or password incorrect!!" });
@@ -30,18 +32,21 @@ router.post("/validate", async (req, res) => {
         } else {
           payload = { id: user.rows[0].student_id, role: "student" };
         }
+        await pool.query('COMMIT');
         res.status(201).json({
           status: "Success",
           message: "Validated successfully!!",
           token: jwtgenerator(payload),
         });
       } else {
+        await pool.query('ROLLBACK');
         res
           .status(401)
           .json({ status: "Failure", message: "User phone number or password incorrect!!" });
       }
     }
   } catch (error) {
+    await pool.query('ROLLBACK');
     res.status(500).json({ status: "Error", message: "Server error!!", error: err });
   }
 });
