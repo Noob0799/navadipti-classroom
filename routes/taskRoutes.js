@@ -77,15 +77,24 @@ router.post("/createTask", async (req, res) => {
 router.get("/getTasks", async (req, res) => {
   try {
     const { authorization } = req.headers;
+    const { taskType, subject, term } = req.query;
+    const studentClass = req.query.class;
     const token = authorization.split(" ")[1];
     await pool.query("BEGIN");
     try {
       const { role } = jwt.verify(token, process.env.SECRET_KEY);
       if (role === "principal" || role === "teacher") {
         try {
-          const list = await pool.query(
-            "select t.task_id, class, task_type, subject, term, due_date, i.image_id, i.image_name, i.image_url, t.instructions from task t LEFT OUTER JOIN taskimages ti ON t.task_id = ti.task_id LEFT OUTER JOIN images i ON ti.image_id = i.image_id"
-          );
+          let list = {};
+          if(studentClass && taskType && subject && term) {
+            list = await pool.query(
+              `select t.task_id, class, task_type, subject, term, due_date, i.image_id, i.image_name, i.image_url, t.instructions from task t LEFT OUTER JOIN taskimages ti ON t.task_id = ti.task_id LEFT OUTER JOIN images i ON ti.image_id = i.image_id WHERE class = '${studentClass}' AND task_type = '${taskType}' AND subject = '${subject}' AND term = '${term}'`
+            );
+          } else {
+            list = await pool.query(
+              "select t.task_id, class, task_type, subject, term, due_date, i.image_id, i.image_name, i.image_url, t.instructions from task t LEFT OUTER JOIN taskimages ti ON t.task_id = ti.task_id LEFT OUTER JOIN images i ON ti.image_id = i.image_id"
+            );
+          }
           let taskData = [...list.rows],
           taskList = [];
           const taskMap = new Map();
