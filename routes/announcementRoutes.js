@@ -75,15 +75,23 @@ router.post("/createAnnouncement", async (req, res) => {
 router.get("/getAnnouncements", async (req, res) => {
   try {
     const { authorization } = req.headers;
+    const studentClass = req.query.class;
     const token = authorization.split(" ")[1];
     await pool.query("BEGIN");
     try {
       const { role } = jwt.verify(token, process.env.SECRET_KEY);
       if (role === "principal" || role === "teacher") {
         try {
-          const list = await pool.query(
-            "select a.announcement_id, class, announcement_date, announcement_time, i.image_id, i.image_name, i.image_url, a.instructions from announcement a LEFT OUTER JOIN announcementimages ai ON a.announcement_id = ai.announcement_id LEFT OUTER JOIN images i ON ai.image_id = i.image_id"
-          );
+          let list = {};
+          if(studentClass) {
+            list = await pool.query(
+              `select a.announcement_id, class, announcement_date, announcement_time, i.image_id, i.image_name, i.image_url, a.instructions from announcement a LEFT OUTER JOIN announcementimages ai ON a.announcement_id = ai.announcement_id LEFT OUTER JOIN images i ON ai.image_id = i.image_id WHERE class = '${studentClass}'`
+            );
+          } else {
+            list = await pool.query(
+              "select a.announcement_id, class, announcement_date, announcement_time, i.image_id, i.image_name, i.image_url, a.instructions from announcement a LEFT OUTER JOIN announcementimages ai ON a.announcement_id = ai.announcement_id LEFT OUTER JOIN images i ON ai.image_id = i.image_id"
+            );
+          }
           let announcementData = [...list.rows],
             announcementList = [];
           const announcementMap = new Map();
