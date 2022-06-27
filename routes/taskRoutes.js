@@ -83,7 +83,7 @@ router.get("/getTasks", async (req, res) => {
     await pool.query("BEGIN");
     try {
       const { role } = jwt.verify(token, process.env.SECRET_KEY);
-      if (role === "principal" || role === "teacher") {
+      if (role === "principal" || role === "teacher" || role === "student") {
         try {
           let list = {};
           if(studentClass && taskType && subject && term) {
@@ -137,6 +137,71 @@ router.get("/getTasks", async (req, res) => {
                 : "No task created yet!!"
             }`,
             taskList,
+          });
+        } catch (err) {
+          await pool.query("ROLLBACK");
+          res
+            .status(500)
+            .json({ status: "Error", message: "Server error!!", error: err });
+        }
+      } else {
+        await pool.query("ROLLBACK");
+        res
+          .status(403)
+          .json({ status: "Failure", message: "User not authorized!!" });
+      }
+    } catch (err) {
+      await pool.query("ROLLBACK");
+      if (err.name === "TokenExpiredError") {
+        res.status(403).json({
+          status: "Failure",
+          type: err.name,
+          message: "Authorization token expired!!",
+          error: err,
+        });
+      } else {
+        res.status(403).json({
+          status: "Failure",
+          message: "Authorization failed!!",
+          error: err,
+        });
+      }
+    }
+  } catch (err) {
+    await pool.query("ROLLBACK");
+    res
+      .status(500)
+      .json({ status: "Error", message: "Server error!!", error: err });
+  }
+});
+
+router.delete("/deleteTask", async (req, res) => {
+  try {
+    const { taskId } = req.query;
+    const { authorization } = req.headers;
+    const token = authorization.split(" ")[1];
+    await pool.query("BEGIN");
+    try {
+      const { role } = jwt.verify(token, process.env.SECRET_KEY);
+      if (role === "principal" || role === "teacher") {
+        try {
+          const list = await pool.query(`SELECT image_id from taskimages WHERE task_id = '${taskId}'`);
+          if(list.rows.length) {
+            const imageArr = list.rows;
+            imageArr.forEach(async image => {
+              await pool.query(`DELETE FROM images WHERE image_id = '${image.image_id}'`);
+            });
+          } else {
+            await pool.query("ROLLBACK");
+            res
+              .status(500)
+              .json({ status: "Error", message: "Server error!!", error: err });
+          }
+          await pool.query(`DELETE FROM task WHERE task_id = '${taskId}'`);
+          await pool.query("COMMIT");
+          res.status(201).json({
+            status: "Success",
+            message: "Task deleted successfully!!"
           });
         } catch (err) {
           await pool.query("ROLLBACK");
