@@ -77,15 +77,24 @@ router.post("/createSyllabus", async (req, res) => {
 router.get("/getSyllabus", async (req, res) => {
   try {
     const { authorization } = req.headers;
+    const { subject, term } = req.query;
+    const studentClass = req.query.class;
     const token = authorization.split(" ")[1];
     await pool.query("BEGIN");
     try {
       const { role } = jwt.verify(token, process.env.SECRET_KEY);
       if (role === "principal" || role === "teacher") {
         try {
-          const list = await pool.query(
-            "select s.syllabus_id, class, subject, term, i.image_id, i.image_name, i.image_url, s.instructions from syllabus s LEFT OUTER JOIN syllabusimages si ON s.syllabus_id = si.syllabus_id LEFT OUTER JOIN images i ON si.image_id = i.image_id"
-          );
+          let list = {};
+          if(studentClass && subject && term) {
+            list = await pool.query(
+              `select s.syllabus_id, class, subject, term, i.image_id, i.image_name, i.image_url, s.instructions from syllabus s LEFT OUTER JOIN syllabusimages si ON s.syllabus_id = si.syllabus_id LEFT OUTER JOIN images i ON si.image_id = i.image_id WHERE class = '${studentClass}' AND term = '${term}' AND subject = '${subject}'`
+            );
+          } else {
+            list = await pool.query(
+              "select s.syllabus_id, class, subject, term, i.image_id, i.image_name, i.image_url, s.instructions from syllabus s LEFT OUTER JOIN syllabusimages si ON s.syllabus_id = si.syllabus_id LEFT OUTER JOIN images i ON si.image_id = i.image_id"
+            );
+          }
           let syllabusData = [...list.rows],
             syllabusList = [];
           const syllabusMap = new Map();
