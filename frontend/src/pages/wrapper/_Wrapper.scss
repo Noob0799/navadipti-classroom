@@ -4,9 +4,12 @@
     background-repeat: no-repeat;
     background-size: cover;
     .wrapper-navbar {
+        .container {
+            max-width: 100% !important;
+        }
         height: 50px;
         .active-tab {
-            color: white;
+            color: beige;
             cursor: pointer;
         }
         .inactive-tab {
@@ -14,7 +17,7 @@
             cursor: pointer;
         }
         .back-btn {
-            color: white;
+            color: beige;
             cursor: pointer;
         }
     }

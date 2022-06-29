@@ -1,4 +1,3 @@
-import { useState } from "react";
 import Toast from "react-bootstrap/Toast";
 
 const ToastBox = ({ closeToast, variant, toastHeading, toastBody }) => {

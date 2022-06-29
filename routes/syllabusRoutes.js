@@ -107,7 +107,7 @@ router.get("/getSyllabus", async (req, res) => {
               imageArr.push({
                 id: syllabusObj.image_id,
                 name: syllabusObj.image_name,
-                url: syllabusObj.image_url,
+                src: syllabusObj.image_url,
               });
             }
             syllabusMap.set(syllabusObj.syllabus_id, imageArr);

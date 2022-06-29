@@ -107,7 +107,7 @@ router.get("/getTasks", async (req, res) => {
               imageArr.push({
                 id: taskObj.image_id,
                 name: taskObj.image_name,
-                url: taskObj.image_url,
+                src: taskObj.image_url,
               });
             }
             taskMap.set(taskObj.task_id, imageArr);

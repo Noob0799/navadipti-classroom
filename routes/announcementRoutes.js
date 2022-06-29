@@ -104,7 +104,7 @@ router.get("/getAnnouncements", async (req, res) => {
               imageArr.push({
                 id: announcementObj.image_id,
                 name: announcementObj.image_name,
-                url: announcementObj.image_url,
+                src: announcementObj.image_url,
               });
             }
             announcementMap.set(announcementObj.announcement_id, imageArr);
