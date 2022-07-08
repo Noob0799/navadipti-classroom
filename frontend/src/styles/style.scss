@@ -5,6 +5,7 @@
 @import "../pages/wrapper/Wrapper";
 @import "../pages/landingOptions/LandingOptions";
 @import "../components/authModal/AuthModal";
+@import "../components/filter/Filter";
 
 /* width */
 ::-webkit-scrollbar {
@@ -98,6 +99,7 @@
 .list-container {
   max-height: 90vh;
   overflow-y: auto;
+  padding-top: 60px;
   .list-item {
     margin: 20px 40px;
     border-radius: 5px;
@@ -128,20 +130,44 @@
           margin-left: 5px;
         }
       }
-      @media screen and (max-width: 490px) {
+      @media screen and (max-width: 523px) {
         grid-template-columns: auto;
         div {
           margin: 5px 0;
+          .list-item-label {
+            font-size: 14px;
+          }
+          .list-item-value {
+            font-size: 16px;
+          }
         }
       }
     }
-    .list-item-body {
-      width: 100%;
-      display: grid;
-      grid-template-columns: 85% 15%;
-      div {
-        word-wrap: break-word;
-        padding: 0 10px;
+    .accordion-body {
+      .list-item-body {
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        div {
+          display: flex;
+          word-wrap: break-word;
+          padding: 0 5px;
+          .list-item-body-btn {
+            border: 2px solid black;
+            font-weight: bold;
+          }
+        }
+        @media screen and (max-width: 523px) {
+          div {
+            flex-direction: column;
+            .list-item-body-btn {
+              font-size: 10px;
+            }
+          }
+        }
+      }
+      @media screen and (max-width: 523px) {
+        padding: 1rem 0.5rem;
       }
     }
   }

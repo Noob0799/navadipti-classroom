@@ -4,6 +4,7 @@ import Spinner from "react-bootstrap/Spinner";
 import ToastContainer from "react-bootstrap/ToastContainer";
 import Toast from "../../../components/toast/Toast";
 import AccordionItem from "../../../components/accordionItem/AccordionItem";
+import Filter from "../../../components/filter/Filter";
 import Accordion from "react-bootstrap/Accordion";
 import Axios from "axios";
 import jwt_decode from "jwt-decode";
@@ -81,6 +82,7 @@ const View = () => {
         </div>
       ) : (
         <>
+          <Filter page="TaskView" />
           <Accordion defaultActiveKey="0" className="list-container">
             {taskList.map((task) => {
               return <AccordionItem {...task} key={task.id} />;

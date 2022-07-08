@@ -4,7 +4,6 @@ import Button from "react-bootstrap/Button";
 import ImageViewerModal from "../../components/imageViewerModal/ImageViewerModal";
 
 const AccordionItem = (props) => {
-  console.log(props);
   const [showModal, setShowModal] = useState(false);
 
   const handleShow = () => setShowModal(true);
@@ -53,8 +52,8 @@ const AccordionItem = (props) => {
             <div>{props.instructions}</div>
             {props.images.length && (
               <div>
-                <Button variant="warning" onClick={handleShow}>
-                  Images
+                <Button variant="warning" className="list-item-body-btn" onClick={handleShow}>
+                  Task Images
                 </Button>
               </div>
             )}
