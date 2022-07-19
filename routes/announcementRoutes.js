@@ -75,7 +75,7 @@ router.post("/createAnnouncement", async (req, res) => {
 router.get("/getAnnouncements", async (req, res) => {
   try {
     const { authorization } = req.headers;
-    const studentClass = req.query.class;
+    const { studentClass } = req.query;
     const token = authorization.split(" ")[1];
     await pool.query("BEGIN");
     try {

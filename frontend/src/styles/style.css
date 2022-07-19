@@ -12040,34 +12040,6 @@ fieldset:disabled .btn {
   margin: 20px auto 60px;
 }
 
-.filter-item {
-  border: 4px solid black;
-  border-radius: 0 !important;
-  position: absolute;
-  z-index: 999;
-  width: 100%;
-}
-
-.filter-item .filter-header .filter-icon {
-  margin-left: 10px;
-}
-
-.filter-item .filter-header .accordion-button:focus {
-  border: none;
-  -webkit-box-shadow: none;
-          box-shadow: none;
-}
-
-.filter-item .filter-header .accordion-button:not(.collapsed) {
-  border-bottom: 2px solid black;
-}
-
-.filter-item .filter-header .accordion-button {
-  background-color: beige;
-  font-size: 20px;
-  font-weight: 600;
-}
-
 /* width */
 ::-webkit-scrollbar {
   width: 10px;
@@ -12282,5 +12254,58 @@ fieldset:disabled .btn {
   .list-container .list-item .accordion-body {
     padding: 1rem 0.5rem;
   }
+}
+
+.filter-item {
+  border-radius: 0 !important;
+  position: absolute;
+  z-index: 999;
+  width: 100%;
+}
+
+.filter-item .filter-header .filter-icon {
+  margin-left: 10px;
+}
+
+.filter-item .filter-header .accordion-button:focus {
+  border: none;
+  -webkit-box-shadow: none;
+          box-shadow: none;
+}
+
+.filter-item .filter-header .accordion-button:not(.collapsed) {
+  border-bottom: 2px solid black;
+}
+
+.filter-item .filter-header .accordion-button {
+  background-color: beige;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.filter-item .filter-body {
+  background-color: black;
+}
+
+.filter-item .filter-body .form-label {
+  font-size: 20px;
+  font-weight: 600;
+  color: beige;
+}
+
+.filter-item .filter-body .form-select {
+  background-color: beige;
+  border: 2px solid black;
+  cursor: pointer;
+}
+
+.filter-item .filter-body .form-btn-container {
+  background-color: black;
+  text-align: center;
+}
+
+.filter-item .filter-body .form-btn-container .apply-filter-btn {
+  font-size: 16px;
+  font-weight: 600;
 }
 /*# sourceMappingURL=style.css.map */

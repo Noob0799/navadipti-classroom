@@ -74,6 +74,39 @@ const View = () => {
       ]);
     }
   };
+  const filter = async (obj) => {
+    const params = {};
+    for (let key in obj) {
+      if (obj[key] !== "Any") {
+        params[key] = obj[key];
+      }
+    }
+    setIsFetchingTask(true);
+    try {
+      const response = await Axios.get("http://localhost:5000/task/getTasks", {
+        headers: {
+          Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+        },
+        params,
+      });
+      if (response.data.status === "Success") {
+        setIsFetchingTask(false);
+        console.log("Tasks fetched successfully!!");
+        displayToast("success", "Success", "Tasks fetched successfully.");
+        setTaskList(response.data.taskList);
+      }
+    } catch (error) {
+      setIsFetchingTask(false);
+      console.log("Tasks fetch failed!!", error);
+      displayToast("danger", "Error", "Tasks fetch failed.");
+      if (error.response.data.type === "TokenExpiredError") {
+        displayToast("danger", "Error", "Session expired. Please login again.");
+        setTimeout(() => {
+          navigate("/");
+        }, 2000);
+      }
+    }
+  };
   return (
     <>
       {isFetchingTask ? (
@@ -82,7 +115,7 @@ const View = () => {
         </div>
       ) : (
         <>
-          <Filter page="TaskView" />
+          <Filter page="TaskView" filter={filter} />
           <Accordion defaultActiveKey="0" className="list-container">
             {taskList.map((task) => {
               return <AccordionItem {...task} key={task.id} />;

@@ -5,7 +5,6 @@
 @import "../pages/wrapper/Wrapper";
 @import "../pages/landingOptions/LandingOptions";
 @import "../components/authModal/AuthModal";
-@import "../components/filter/Filter";
 
 /* width */
 ::-webkit-scrollbar {
@@ -168,6 +167,51 @@
       }
       @media screen and (max-width: 523px) {
         padding: 1rem 0.5rem;
+      }
+    }
+  }
+}
+
+.filter-item {
+  border-radius: 0 !important;
+  position: absolute;
+  z-index: 999;
+  width: 100%;
+  .filter-header {
+    .filter-icon {
+      margin-left: 10px;
+    }
+    .accordion-button:focus {
+      border: none;
+      box-shadow: none;
+    }
+    .accordion-button:not(.collapsed) {
+      border-bottom: 2px solid black;
+    }
+    .accordion-button {
+      background-color: beige;
+      font-size: 20px;
+      font-weight: 600;
+    }
+  }
+  .filter-body {
+    background-color: black;
+    .form-label {
+      font-size: 20px;
+      font-weight: 600;
+      color: beige;
+    }
+    .form-select {
+      background-color: beige;
+      border: 2px solid black;
+      cursor: pointer;
+    }
+    .form-btn-container {
+      background-color: black;
+      text-align: center;
+      .apply-filter-btn {
+        font-size: 16px;
+        font-weight: 600;
       }
     }
   }
