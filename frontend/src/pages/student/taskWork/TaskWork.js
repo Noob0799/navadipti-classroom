@@ -9,41 +9,43 @@ import Accordion from "react-bootstrap/Accordion";
 import Axios from "axios";
 import jwt_decode from "jwt-decode";
 
-const View = () => {
+const TaskWork = () => {
   const [toastComponents, setToastComponents] = useState([]);
-  const [isFetchingAnnouncement, setIsFetchingAnnouncement] = useState(false);
-  const [announcementList, setAnnouncementList] = useState([]);
+  const [isFetchingTask, setIsFetchingTask] = useState(false);
+  const [taskList, setTaskList] = useState([]);
+  const [role, setRole] = useState("teacher");
   const navigate = useNavigate();
 
   useEffect(() => {
     const { role } = jwt_decode(sessionStorage.getItem("token"));
     const index = window.location.pathname.split("/").findIndex((val) => {
-      return val === role || (val === "teacher" && role === "principal");
+      return val === role;
     });
     if (index < 0) {
       navigate("/");
     } else {
-      setIsFetchingAnnouncement(true);
-      getAnnouncements();
+      setRole(role);
+      setIsFetchingTask(true);
+      getTasks();
     }
   }, []);
-  const getAnnouncements = async () => {
+  const getTasks = async () => {
     try {
-      const response = await Axios.get("http://localhost:5000/announcement/getAnnouncements", {
+      const response = await Axios.get("http://localhost:5000/task/getTasks", {
         headers: {
           Authorization: `Bearer ${sessionStorage.getItem("token")}`,
         },
       });
       if (response.data.status === "Success") {
-        setIsFetchingAnnouncement(false);
-        console.log("Announcements fetched successfully!!");
-        displayToast("success", "Success", "Announcements fetched successfully.");
-        setAnnouncementList(response.data.announcementList);
+        setIsFetchingTask(false);
+        console.log("Tasks fetched successfully!!");
+        displayToast("success", "Success", "Tasks fetched successfully.");
+        setTaskList(response.data.taskList);
       }
     } catch (error) {
-      setIsFetchingAnnouncement(false);
-      console.log("Announcements fetch failed!!", error);
-      displayToast("danger", "Error", "Announcements fetch failed.");
+      setIsFetchingTask(false);
+      console.log("Tasks fetch failed!!", error);
+      displayToast("danger", "Error", "Tasks fetch failed.");
       if (error.response.data.type === "TokenExpiredError") {
         displayToast("danger", "Error", "Session expired. Please login again.");
         setTimeout(() => {
@@ -81,24 +83,24 @@ const View = () => {
         params[key] = obj[key];
       }
     }
-    setIsFetchingAnnouncement(true);
+    setIsFetchingTask(true);
     try {
-      const response = await Axios.get("http://localhost:5000/announcement/getAnnouncements", {
+      const response = await Axios.get("http://localhost:5000/task/getTasks", {
         headers: {
           Authorization: `Bearer ${sessionStorage.getItem("token")}`,
         },
         params,
       });
       if (response.data.status === "Success") {
-        setIsFetchingAnnouncement(false);
-        console.log("Announcements fetched successfully!!");
-        displayToast("success", "Success", "Announcements fetched successfully.");
-        setAnnouncementList(response.data.announcementList);
+        setIsFetchingTask(false);
+        console.log("Tasks fetched successfully!!");
+        displayToast("success", "Success", "Tasks fetched successfully.");
+        setTaskList(response.data.taskList);
       }
     } catch (error) {
-      setIsFetchingAnnouncement(false);
-      console.log("Announcements fetch failed!!", error);
-      displayToast("danger", "Error", "Announcements fetch failed.");
+      setIsFetchingTask(false);
+      console.log("Tasks fetch failed!!", error);
+      displayToast("danger", "Error", "Tasks fetch failed.");
       if (error.response.data.type === "TokenExpiredError") {
         displayToast("danger", "Error", "Session expired. Please login again.");
         setTimeout(() => {
@@ -109,16 +111,16 @@ const View = () => {
   };
   return (
     <>
-      {isFetchingAnnouncement ? (
+      {isFetchingTask ? (
         <div className="page-container">
           <Spinner animation="border" variant="dark" className="view-spinner" />
         </div>
       ) : (
         <>
-          <Filter page="Announcement" filter={filter} />
+          <Filter page="Task" filter={filter} />
           <Accordion defaultActiveKey="0" className="list-container">
-            {announcementList.map((announcement) => {
-              return <AccordionItem {...announcement} key={announcement.id} />;
+            {taskList.map((task) => {
+              return <AccordionItem {...task} key={task.id} role={role} />;
             })}
           </Accordion>
           <ToastContainer
@@ -141,4 +143,4 @@ const View = () => {
   );
 };
 
-export default View;
+export default TaskWork;

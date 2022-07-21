@@ -24,11 +24,11 @@ const Filter = ({ page, filter }) => {
     <Accordion>
       <Accordion.Item eventKey="0" className="filter-item" id="filterBtn">
         <Accordion.Header className="filter-header">
-          Apply Filters{" "}
+          Apply {page} Filters{" "}
           <FontAwesomeIcon icon={faFilter} className="filter-icon" />
         </Accordion.Header>
         <Accordion.Body className="filter-body">
-          {(page === "TaskView" || page === "SyllabusView" || page === "AnnouncementView") && (
+          {(page === "Task" || page === "Syllabus" || page === "Announcement") && (
             <Form.Group className="mb-3" controlId="validationCustomClass">
               <Form.Label className="form-label">Class:</Form.Label>
               <Form.Select
@@ -48,7 +48,7 @@ const Filter = ({ page, filter }) => {
               </Form.Select>
             </Form.Group>
           )}
-          {(page === "TaskView" || page === "SyllabusView") && (
+          {(page === "Task" || page === "Syllabus") && (
             <Form.Group className="mb-3" controlId="validationCustomSubject">
               <Form.Label className="form-label">Subject:</Form.Label>
               <Form.Select
@@ -70,7 +70,7 @@ const Filter = ({ page, filter }) => {
               </Form.Select>
             </Form.Group>
           )}
-          {page === "TaskView" && (
+          {page === "Task" && (
             <Form.Group className="mb-3" controlId="validationCustomTaskType">
               <Form.Label className="form-label">Task Type:</Form.Label>
               <Form.Select
@@ -85,7 +85,7 @@ const Filter = ({ page, filter }) => {
               </Form.Select>
             </Form.Group>
           )}
-          {(page === "TaskView" || page === "SyllabusView") && (
+          {(page === "Task" || page === "Syllabus") && (
             <Form.Group className="mb-3" controlId="validationCustomTerm">
               <Form.Label className="form-label">Term:</Form.Label>
               <Form.Select

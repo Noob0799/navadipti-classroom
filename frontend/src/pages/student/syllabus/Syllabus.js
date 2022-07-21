@@ -9,41 +9,41 @@ import Accordion from "react-bootstrap/Accordion";
 import Axios from "axios";
 import jwt_decode from "jwt-decode";
 
-const View = () => {
+const Syllabus = () => {
   const [toastComponents, setToastComponents] = useState([]);
-  const [isFetchingAnnouncement, setIsFetchingAnnouncement] = useState(false);
-  const [announcementList, setAnnouncementList] = useState([]);
+  const [isFetchingSyllabus, setIsFetchingSyllabus] = useState(false);
+  const [syllabusList, setSyllabusList] = useState([]);
   const navigate = useNavigate();
 
   useEffect(() => {
     const { role } = jwt_decode(sessionStorage.getItem("token"));
     const index = window.location.pathname.split("/").findIndex((val) => {
-      return val === role || (val === "teacher" && role === "principal");
+      return val === role;
     });
     if (index < 0) {
       navigate("/");
     } else {
-      setIsFetchingAnnouncement(true);
-      getAnnouncements();
+      setIsFetchingSyllabus(true);
+      getSyllabus();
     }
   }, []);
-  const getAnnouncements = async () => {
+  const getSyllabus = async () => {
     try {
-      const response = await Axios.get("http://localhost:5000/announcement/getAnnouncements", {
+      const response = await Axios.get("http://localhost:5000/syllabus/getSyllabus", {
         headers: {
           Authorization: `Bearer ${sessionStorage.getItem("token")}`,
         },
       });
       if (response.data.status === "Success") {
-        setIsFetchingAnnouncement(false);
-        console.log("Announcements fetched successfully!!");
-        displayToast("success", "Success", "Announcements fetched successfully.");
-        setAnnouncementList(response.data.announcementList);
+        setIsFetchingSyllabus(false);
+        console.log("Syllabus fetched successfully!!");
+        displayToast("success", "Success", "Syllabus fetched successfully.");
+        setSyllabusList(response.data.syllabusList);
       }
     } catch (error) {
-      setIsFetchingAnnouncement(false);
-      console.log("Announcements fetch failed!!", error);
-      displayToast("danger", "Error", "Announcements fetch failed.");
+      setIsFetchingSyllabus(false);
+      console.log("Syllabus fetch failed!!", error);
+      displayToast("danger", "Error", "Syllabus fetch failed.");
       if (error.response.data.type === "TokenExpiredError") {
         displayToast("danger", "Error", "Session expired. Please login again.");
         setTimeout(() => {
@@ -81,24 +81,24 @@ const View = () => {
         params[key] = obj[key];
       }
     }
-    setIsFetchingAnnouncement(true);
+    setIsFetchingSyllabus(true);
     try {
-      const response = await Axios.get("http://localhost:5000/announcement/getAnnouncements", {
+      const response = await Axios.get("http://localhost:5000/syllabus/getSyllabus", {
         headers: {
           Authorization: `Bearer ${sessionStorage.getItem("token")}`,
         },
         params,
       });
       if (response.data.status === "Success") {
-        setIsFetchingAnnouncement(false);
-        console.log("Announcements fetched successfully!!");
-        displayToast("success", "Success", "Announcements fetched successfully.");
-        setAnnouncementList(response.data.announcementList);
+        setIsFetchingSyllabus(false);
+        console.log("Syllabus fetched successfully!!");
+        displayToast("success", "Success", "Syllabus fetched successfully.");
+        setSyllabusList(response.data.syllabusList);
       }
     } catch (error) {
-      setIsFetchingAnnouncement(false);
-      console.log("Announcements fetch failed!!", error);
-      displayToast("danger", "Error", "Announcements fetch failed.");
+      setIsFetchingSyllabus(false);
+      console.log("Syllabus fetch failed!!", error);
+      displayToast("danger", "Error", "Syllabus fetch failed.");
       if (error.response.data.type === "TokenExpiredError") {
         displayToast("danger", "Error", "Session expired. Please login again.");
         setTimeout(() => {
@@ -109,16 +109,16 @@ const View = () => {
   };
   return (
     <>
-      {isFetchingAnnouncement ? (
+      {isFetchingSyllabus ? (
         <div className="page-container">
           <Spinner animation="border" variant="dark" className="view-spinner" />
         </div>
       ) : (
         <>
-          <Filter page="Announcement" filter={filter} />
+          <Filter page="Syllabus" filter={filter} />
           <Accordion defaultActiveKey="0" className="list-container">
-            {announcementList.map((announcement) => {
-              return <AccordionItem {...announcement} key={announcement.id} />;
+            {syllabusList.map((syllabus) => {
+              return <AccordionItem {...syllabus} key={syllabus.id} />;
             })}
           </Accordion>
           <ToastContainer
@@ -141,4 +141,4 @@ const View = () => {
   );
 };
 
-export default View;
+export default Syllabus;

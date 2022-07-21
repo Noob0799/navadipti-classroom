@@ -70,6 +70,10 @@
   }
   .form-btn-container {
     text-align: center;
+    .form-btn-container-btn {
+      border: 2px solid black;
+      margin: 2px;
+    }
   }
   .form-select,
   .form-control {
@@ -127,6 +131,9 @@
           font-weight: 600;
           font-size: 18px;
           margin-left: 5px;
+          &.red-alert {
+            color: red;
+          }
         }
       }
       @media screen and (max-width: 523px) {
@@ -154,6 +161,7 @@
           .list-item-body-btn {
             border: 2px solid black;
             font-weight: bold;
+            margin: 2px;
           }
         }
         @media screen and (max-width: 523px) {
@@ -215,4 +223,8 @@
       }
     }
   }
+}
+
+.submission-modal-body {
+  background-color: beige;
 }

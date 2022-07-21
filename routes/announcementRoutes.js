@@ -20,7 +20,7 @@ router.post("/createAnnouncement", async (req, res) => {
             [studentClass, date, time, instructions]
           );
           const announcementId = newAnnouncement.rows[0].announcement_id;
-          images.forEach(async (image) => {
+          for (let image of images) {
             const newImage = await pool.query(
               "INSERT INTO images (image_name, image_url) VALUES ($1, $2) RETURNING image_id",
               [image.name, image.url]
@@ -29,7 +29,7 @@ router.post("/createAnnouncement", async (req, res) => {
               "INSERT INTO announcementimages (announcement_id, image_id) VALUES ($1, $2)",
               [announcementId, newImage.rows[0].image_id]
             );
-          });
+          }
           await pool.query("COMMIT");
           res.status(201).json({
             status: "Success",
@@ -40,6 +40,7 @@ router.post("/createAnnouncement", async (req, res) => {
           res
             .status(500)
             .json({ status: "Error", message: "Server error!!", error: err });
+        } finally {
         }
       } else {
         await pool.query("ROLLBACK");
@@ -82,54 +83,44 @@ router.get("/getAnnouncements", async (req, res) => {
       const { role } = jwt.verify(token, process.env.SECRET_KEY);
       if (role === "principal" || role === "teacher" || role === "student") {
         try {
-          let list = {};
-          if(studentClass) {
-            list = await pool.query(
-              `select a.announcement_id, class, announcement_date, announcement_time, i.image_id, i.image_name, i.image_url, a.instructions from announcement a LEFT OUTER JOIN announcementimages ai ON a.announcement_id = ai.announcement_id LEFT OUTER JOIN images i ON ai.image_id = i.image_id WHERE class = '${studentClass}'`
+          let announcementList = [],
+            announcementData = [];
+          if (studentClass) {
+            announcementList = await pool.query(
+              `SELECT * FROM announcement WHERE class = '${studentClass}'`
             );
           } else {
-            list = await pool.query(
-              "select a.announcement_id, class, announcement_date, announcement_time, i.image_id, i.image_name, i.image_url, a.instructions from announcement a LEFT OUTER JOIN announcementimages ai ON a.announcement_id = ai.announcement_id LEFT OUTER JOIN images i ON ai.image_id = i.image_id"
-            );
+            announcementList = await pool.query("SELECT * FROM announcement");
           }
-          let announcementData = [...list.rows],
-            announcementList = [];
-          const announcementMap = new Map();
-          announcementData.forEach((announcementObj) => {
-            let imageArr = announcementMap.get(announcementObj.announcement_id);
-            if (!imageArr) {
-              imageArr = [];
-            }
-            if (announcementObj.image_id) {
-              imageArr.push({
-                id: announcementObj.image_id,
-                name: announcementObj.image_name,
-                src: announcementObj.image_url,
-              });
-            }
-            announcementMap.set(announcementObj.announcement_id, imageArr);
-          });
-          announcementData.forEach((announcementObj) => {
-            const imageArr = announcementMap.get(
-              announcementObj.announcement_id
+          announcementData = [...announcementList.rows];
+          announcementList = [];
+          for (let announcement of announcementData) {
+            const announcementImageList = await pool.query(
+              `SELECT i.image_id, i.image_name, i.image_url FROM announcementimages a, images i WHERE a.image_id = i.image_id AND a.announcement_id = '${announcement.announcement_id}'`
             );
-            if (imageArr) {
-              announcementList.push({
-                id: announcementObj.announcement_id,
-                class: announcementObj.class,
-                date: announcementObj.announcement_date,
-                time: announcementObj.announcement_time,
-                instructions: announcementObj.instructions,
-                images: imageArr,
-              });
-              announcementMap.delete(announcementObj.announcement_id);
-            }
-          });
+            const announcementImageData = [...announcementImageList.rows].map(
+              (row) => {
+                return {
+                  id: row.image_id,
+                  name: row.image_name,
+                  src: row.image_url,
+                };
+              }
+            );
+            announcementList.push({
+              id: announcement.announcement_id,
+              class: announcement.class,
+              date: announcement.announcement_date,
+              time: announcement.announcement_time,
+              instructions: announcement.instructions,
+              images: [...announcementImageData],
+            });
+          }
           await pool.query("COMMIT");
           res.status(201).json({
             status: "Success",
             message: `${
-              announcementData.length
+              announcementList.length
                 ? "Announcements fetched successfully!!"
                 : "No announcements made yet!!"
             }`,
@@ -182,18 +173,24 @@ router.delete("/deleteAnnouncement", async (req, res) => {
       const { role } = jwt.verify(token, process.env.SECRET_KEY);
       if (role === "principal" || role === "teacher") {
         try {
-          const list = await pool.query(`SELECT image_id from announcementimages WHERE announcement_id = '${announcementId}'`);
-          if(list.rows.length) {
+          const list = await pool.query(
+            `SELECT image_id from announcementimages WHERE announcement_id = '${announcementId}'`
+          );
+          if (list.rows.length) {
             const imageArr = list.rows;
-            imageArr.forEach(async image => {
-              await pool.query(`DELETE FROM images WHERE image_id = '${image.image_id}'`);
-            });
+            for (let image of imageArr) {
+              await pool.query(
+                `DELETE FROM images WHERE image_id = '${image.image_id}'`
+              );
+            }
           }
-          await pool.query(`DELETE FROM announcement WHERE announcement_id = '${announcementId}'`);
+          await pool.query(
+            `DELETE FROM announcement WHERE announcement_id = '${announcementId}'`
+          );
           await pool.query("COMMIT");
           res.status(201).json({
             status: "Success",
-            message: "Announcement deleted successfully!!"
+            message: "Announcement deleted successfully!!",
           });
         } catch (err) {
           await pool.query("ROLLBACK");

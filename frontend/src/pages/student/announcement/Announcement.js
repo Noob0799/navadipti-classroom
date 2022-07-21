@@ -9,7 +9,7 @@ import Accordion from "react-bootstrap/Accordion";
 import Axios from "axios";
 import jwt_decode from "jwt-decode";
 
-const View = () => {
+const Announcement = () => {
   const [toastComponents, setToastComponents] = useState([]);
   const [isFetchingAnnouncement, setIsFetchingAnnouncement] = useState(false);
   const [announcementList, setAnnouncementList] = useState([]);
@@ -18,7 +18,7 @@ const View = () => {
   useEffect(() => {
     const { role } = jwt_decode(sessionStorage.getItem("token"));
     const index = window.location.pathname.split("/").findIndex((val) => {
-      return val === role || (val === "teacher" && role === "principal");
+      return val === role;
     });
     if (index < 0) {
       navigate("/");
@@ -141,4 +141,4 @@ const View = () => {
   );
 };
 
-export default View;
+export default Announcement;

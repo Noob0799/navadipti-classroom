@@ -115,7 +115,7 @@ const View = () => {
         </div>
       ) : (
         <>
-          <Filter page="SyllabusView" filter={filter} />
+          <Filter page="Syllabus" filter={filter} />
           <Accordion defaultActiveKey="0" className="list-container">
             {syllabusList.map((syllabus) => {
               return <AccordionItem {...syllabus} key={syllabus.id} />;

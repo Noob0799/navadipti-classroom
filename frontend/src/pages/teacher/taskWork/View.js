@@ -13,6 +13,7 @@ const View = () => {
   const [toastComponents, setToastComponents] = useState([]);
   const [isFetchingTask, setIsFetchingTask] = useState(false);
   const [taskList, setTaskList] = useState([]);
+  const [role, setRole] = useState("teacher");
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -23,6 +24,7 @@ const View = () => {
     if (index < 0) {
       navigate("/");
     } else {
+      setRole(role);
       setIsFetchingTask(true);
       getTasks();
     }
@@ -115,10 +117,10 @@ const View = () => {
         </div>
       ) : (
         <>
-          <Filter page="TaskView" filter={filter} />
+          <Filter page="Task" filter={filter} />
           <Accordion defaultActiveKey="0" className="list-container">
             {taskList.map((task) => {
-              return <AccordionItem {...task} key={task.id} />;
+              return <AccordionItem {...task} key={task.id} role={role} />;
             })}
           </Accordion>
           <ToastContainer

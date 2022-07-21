@@ -4,7 +4,7 @@ import Carousel from "react-bootstrap/Carousel";
 const ImageViewerModal = ({ show, close, files }) => {
   return (
     <>
-      <Modal show={show} onHide={close} className="">
+      <Modal show={show} onHide={close}>
         <Modal.Header closeButton>
           <Modal.Title>Uploaded Images</Modal.Title>
         </Modal.Header>

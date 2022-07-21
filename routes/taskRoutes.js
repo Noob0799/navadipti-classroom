@@ -20,7 +20,7 @@ router.post("/createTask", async (req, res) => {
             [studentClass, taskType, subject, term, dueDate, instructions]
           );
           const taskId = newTask.rows[0].task_id;
-          images.forEach(async (image) => {
+          for (let image of images) {
             const newImage = await pool.query(
               "INSERT INTO images (image_name, image_url) VALUES ($1, $2) RETURNING image_id",
               [image.name, image.url]
@@ -29,7 +29,7 @@ router.post("/createTask", async (req, res) => {
               "INSERT INTO taskimages (task_id, image_id) VALUES ($1, $2)",
               [taskId, newImage.rows[0].image_id]
             );
-          });
+          }
           await pool.query("COMMIT");
           res.status(201).json({
             status: "Success",
@@ -57,13 +57,11 @@ router.post("/createTask", async (req, res) => {
           error: err,
         });
       } else {
-        res
-          .status(403)
-          .json({
-            status: "Failure",
-            message: "Authorization failed!!",
-            error: err,
-          });
+        res.status(403).json({
+          status: "Failure",
+          message: "Authorization failed!!",
+          error: err,
+        });
       }
     }
   } catch (err) {
@@ -84,75 +82,78 @@ router.get("/getTasks", async (req, res) => {
       const { role } = jwt.verify(token, process.env.SECRET_KEY);
       if (role === "principal" || role === "teacher" || role === "student") {
         try {
-          let list = {}, filterString = "";
-          if(studentClass) {
+          let list = {},
+            filterString = "";
+          if (studentClass) {
             filterString += `class = '${studentClass}'`;
           }
-          if(taskType) {
-            if(filterString.length) {
+          if (taskType) {
+            if (filterString.length) {
               filterString += " AND ";
             }
             filterString += `task_type = '${taskType}'`;
           }
-          if(subject) {
-            if(filterString.length) {
+          if (subject) {
+            if (filterString.length) {
               filterString += " AND ";
             }
-            filterString += `subject = '${subject}`;
+            filterString += `subject = '${subject}'`;
           }
-          if(term) {
-            if(filterString.length) {
+          if (term) {
+            if (filterString.length) {
               filterString += " AND ";
             }
             filterString += `term = '${term}'`;
           }
-          if(filterString) {
-            list = await pool.query(
-              `select t.task_id, class, task_type, subject, term, due_date, i.image_id, i.image_name, i.image_url, t.instructions from task t LEFT OUTER JOIN taskimages ti ON t.task_id = ti.task_id LEFT OUTER JOIN images i ON ti.image_id = i.image_id WHERE ${filterString}`
+          let taskList = [],
+            taskData = [];
+          if (filterString) {
+            taskList = await pool.query(
+              `SELECT * FROM task WHERE ${filterString}`
             );
           } else {
-            list = await pool.query(
-              "select t.task_id, class, task_type, subject, term, due_date, i.image_id, i.image_name, i.image_url, t.instructions from task t LEFT OUTER JOIN taskimages ti ON t.task_id = ti.task_id LEFT OUTER JOIN images i ON ti.image_id = i.image_id"
-            );
+            taskList = await pool.query(`SELECT * FROM task`);
           }
-          let taskData = [...list.rows],
+          taskData = [...taskList.rows];
           taskList = [];
-          const taskMap = new Map();
-          taskData.forEach((taskObj) => {
-            let imageArr = taskMap.get(taskObj.task_id);
-            if (!imageArr) {
-              imageArr = [];
-            }
-            if (taskObj.image_id) {
-              imageArr.push({
-                id: taskObj.image_id,
-                name: taskObj.image_name,
-                src: taskObj.image_url,
-              });
-            }
-            taskMap.set(taskObj.task_id, imageArr);
-          });
-          taskData.forEach((taskObj) => {
-            const imageArr = taskMap.get(taskObj.task_id);
-            if (imageArr) {
-              taskList.push({
-                id: taskObj.task_id,
-                class: taskObj.class,
-                taskType: taskObj.task_type,
-                subject: taskObj.subject,
-                term: taskObj.term,
-                dueDate: taskObj.due_date,
-                instructions: taskObj.instructions,
-                images: imageArr,
-              });
-              taskMap.delete(taskObj.task_id);
-            }
-          });
+          for (let task of taskData) {
+            const taskImageList = await pool.query(
+              `SELECT i.image_id, i.image_name, i.image_url FROM taskimages t, images i WHERE t.image_id = i.image_id AND t.task_id = '${task.task_id}'`
+            );
+            const taskImageData = [...taskImageList.rows].map((row) => {
+              return {
+                id: row.image_id,
+                name: row.image_name,
+                src: row.image_url,
+              };
+            });
+            const submittedImageList = await pool.query(
+              `SELECT i.image_id, i.image_name, i.image_url FROM completedtaskimages t, images i WHERE t.image_id = i.image_id AND t.task_id = '${task.task_id}'`
+            );
+            const submittedImageData = [...submittedImageList.rows].map((row) => {
+              return {
+                id: row.image_id,
+                name: row.image_name,
+                src: row.image_url,
+              };
+            });
+            taskList.push({
+              id: task.task_id,
+              class: task.class,
+              taskType: task.task_type,
+              subject: task.subject,
+              term: task.term,
+              dueDate: task.due_date,
+              instructions: task.instructions,
+              images: [...taskImageData],
+              submittedImages: [...submittedImageData]
+            });
+          }
           await pool.query("COMMIT");
           res.status(201).json({
             status: "Success",
             message: `${
-              taskData.length
+              taskList.length
                 ? "Tasks fetched successfully!!"
                 : "No task created yet!!"
             }`,
@@ -205,12 +206,16 @@ router.delete("/deleteTask", async (req, res) => {
       const { role } = jwt.verify(token, process.env.SECRET_KEY);
       if (role === "principal" || role === "teacher") {
         try {
-          const list = await pool.query(`SELECT image_id from taskimages WHERE task_id = '${taskId}'`);
-          if(list.rows.length) {
+          const list = await pool.query(
+            `SELECT image_id from taskimages WHERE task_id = '${taskId}'`
+          );
+          if (list.rows.length) {
             const imageArr = list.rows;
-            imageArr.forEach(async image => {
-              await pool.query(`DELETE FROM images WHERE image_id = '${image.image_id}'`);
-            });
+            for (let image of imageArr) {
+              await pool.query(
+                `DELETE FROM images WHERE image_id = '${image.image_id}'`
+              );
+            }
           } else {
             await pool.query("ROLLBACK");
             res
@@ -221,7 +226,71 @@ router.delete("/deleteTask", async (req, res) => {
           await pool.query("COMMIT");
           res.status(201).json({
             status: "Success",
-            message: "Task deleted successfully!!"
+            message: "Task deleted successfully!!",
+          });
+        } catch (err) {
+          await pool.query("ROLLBACK");
+          res
+            .status(500)
+            .json({ status: "Error", message: "Server error!!", error: err });
+        }
+      } else {
+        await pool.query("ROLLBACK");
+        res
+          .status(403)
+          .json({ status: "Failure", message: "User not authorized!!" });
+      }
+    } catch (err) {
+      await pool.query("ROLLBACK");
+      if (err.name === "TokenExpiredError") {
+        res.status(403).json({
+          status: "Failure",
+          type: err.name,
+          message: "Authorization token expired!!",
+          error: err,
+        });
+      } else {
+        res.status(403).json({
+          status: "Failure",
+          message: "Authorization failed!!",
+          error: err,
+        });
+      }
+    }
+  } catch (err) {
+    await pool.query("ROLLBACK");
+    res
+      .status(500)
+      .json({ status: "Error", message: "Server error!!", error: err });
+  }
+});
+
+router.post("/submitTask", async (req, res) => {
+  try {
+    const { authorization } = req.headers;
+    const { id, images } = req.body;
+    await pool.query("BEGIN");
+    try {
+      const token = authorization.split(" ")[1];
+      const { role } = jwt.verify(token, process.env.SECRET_KEY);
+      if (role === "student") {
+        try {
+          const taskId = id;
+          console.log(id, images);
+          for (let image of images) {
+            const newImage = await pool.query(
+              "INSERT INTO images (image_name, image_url) VALUES ($1, $2) RETURNING image_id",
+              [image.name, image.url]
+            );
+            const completedTask = await pool.query(
+              "INSERT INTO completedtaskimages (task_id, image_id) VALUES ($1, $2) RETURNING task_image_id",
+              [taskId, newImage.rows[0].image_id]
+            );
+          }
+          await pool.query("COMMIT");
+          res.status(201).json({
+            status: "Success",
+            message: "Task submitted successfully!!",
           });
         } catch (err) {
           await pool.query("ROLLBACK");

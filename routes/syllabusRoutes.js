@@ -20,7 +20,7 @@ router.post("/createSyllabus", async (req, res) => {
             [studentClass, subject, term, instructions]
           );
           const syllabusId = newSyllabus.rows[0].syllabus_id;
-          images.forEach(async (image) => {
+          for(let image of images) {
             const newImage = await pool.query(
               "INSERT INTO images (image_name, image_url) VALUES ($1, $2) RETURNING image_id",
               [image.name, image.url]
@@ -29,7 +29,7 @@ router.post("/createSyllabus", async (req, res) => {
               "INSERT INTO syllabusimages (syllabus_id, image_id) VALUES ($1, $2)",
               [syllabusId, newImage.rows[0].image_id]
             );
-          });
+          }
           await pool.query("COMMIT");
           res.status(201).json({
             status: "Success",
@@ -92,7 +92,7 @@ router.get("/getSyllabus", async (req, res) => {
             if(filterString.length) {
               filterString += " AND ";
             }
-            filterString += `subject = '${subject}`;
+            filterString += `subject = '${subject}'`;
           }
           if(term) {
             if(filterString.length) {
@@ -100,51 +100,39 @@ router.get("/getSyllabus", async (req, res) => {
             }
             filterString += `term = '${term}'`;
           }
+          let syllabusList = [], syllabusData = [];
           if(filterString) {
-            list = await pool.query(
-              `select s.syllabus_id, class, subject, term, i.image_id, i.image_name, i.image_url, s.instructions from syllabus s LEFT OUTER JOIN syllabusimages si ON s.syllabus_id = si.syllabus_id LEFT OUTER JOIN images i ON si.image_id = i.image_id WHERE ${filterString}`
-            );
+            syllabusList = await pool.query(`SELECT * FROM syllabus WHERE ${filterString}`);
           } else {
-            list = await pool.query(
-              "select s.syllabus_id, class, subject, term, i.image_id, i.image_name, i.image_url, s.instructions from syllabus s LEFT OUTER JOIN syllabusimages si ON s.syllabus_id = si.syllabus_id LEFT OUTER JOIN images i ON si.image_id = i.image_id"
-            );
+            syllabusList = await pool.query(`SELECT * FROM syllabus`);
           }
-          let syllabusData = [...list.rows],
-            syllabusList = [];
-          const syllabusMap = new Map();
-          syllabusData.forEach((syllabusObj) => {
-            let imageArr = syllabusMap.get(syllabusObj.syllabus_id);
-            if (!imageArr) {
-              imageArr = [];
-            }
-            if (syllabusObj.image_id) {
-              imageArr.push({
-                id: syllabusObj.image_id,
-                name: syllabusObj.image_name,
-                src: syllabusObj.image_url,
-              });
-            }
-            syllabusMap.set(syllabusObj.syllabus_id, imageArr);
-          });
-          syllabusData.forEach((syllabusObj) => {
-            const imageArr = syllabusMap.get(syllabusObj.syllabus_id);
-            if (imageArr) {
-              syllabusList.push({
-                id: syllabusObj.syllabus_id,
-                class: syllabusObj.class,
-                subject: syllabusObj.subject,
-                term: syllabusObj.term,
-                instructions: syllabusObj.instructions,
-                images: imageArr,
-              });
-              syllabusMap.delete(syllabusObj.syllabus_id);
-            }
-          });
+          syllabusData = [...syllabusList.rows];
+          syllabusList = [];
+          for(let syllabus of syllabusData) {
+            const syllabusImageList = await pool.query(
+              `SELECT i.image_id, i.image_name, i.image_url FROM syllabusimages s, images i WHERE s.image_id = i.image_id AND s.syllabus_id = '${syllabus.syllabus_id}'`
+            );
+            const syllabusImageData = [...syllabusImageList.rows].map((row) => {
+              return {
+                id: row.image_id,
+                name: row.image_name,
+                src: row.image_url,
+              };
+            });
+            syllabusList.push({
+              id: syllabus.syllabus_id,
+              class: syllabus.class,
+              subject: syllabus.subject,
+              term: syllabus.term,
+              instructions: syllabus.instructions,
+              images: [...syllabusImageData]
+            });
+          }
           await pool.query("COMMIT");
           res.status(201).json({
             status: "Success",
             message: `${
-              syllabusData.length
+              syllabusList.length
                 ? "Syllabus fetched successfully!!"
                 : "No syllabus created yet!!"
             }`,
@@ -200,9 +188,9 @@ router.delete("/deleteSyllabus", async (req, res) => {
           const list = await pool.query(`SELECT image_id from syllabusimages WHERE syllabus_id = '${syllabusId}'`);
           if(list.rows.length) {
             const imageArr = list.rows;
-            imageArr.forEach(async image => {
+            for(let image of imageArr) {
               await pool.query(`DELETE FROM images WHERE image_id = '${image.image_id}'`);
-            });
+            }
           } else {
             await pool.query("ROLLBACK");
             res

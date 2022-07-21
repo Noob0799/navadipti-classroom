@@ -53,6 +53,12 @@ CREATE TABLE taskimages(
     image_id uuid NOT NULL references images(image_id) ON DELETE CASCADE
 );
 
+CREATE TABLE completedtaskimages(
+    task_image_id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+    task_id uuid NOT NULL references task(task_id) ON DELETE CASCADE,
+    image_id uuid NOT NULL references images(image_id) ON DELETE CASCADE
+);
+
 CREATE TABLE announcement(
     announcement_id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
     class VARCHAR(255) NOT NULL,
