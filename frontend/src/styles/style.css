@@ -12007,13 +12007,15 @@ fieldset:disabled .btn {
   cursor: pointer;
 }
 
-.main-wrapper .wrapper-navbar .inactive-tab {
-  color: grey;
+.main-wrapper .wrapper-navbar .back-btn, .main-wrapper .wrapper-navbar .signout-btn {
+  margin: 0 5px;
+  color: beige;
   cursor: pointer;
+  size: 20px;
 }
 
-.main-wrapper .wrapper-navbar .back-btn {
-  color: beige;
+.main-wrapper .wrapper-navbar .inactive-tab {
+  color: grey;
   cursor: pointer;
 }
 
@@ -12038,6 +12040,33 @@ fieldset:disabled .btn {
 
 .validation-msg {
   margin: 20px auto 60px;
+}
+
+.delete-modal-body {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+}
+
+.delete-modal-body .delete-modal-content {
+  padding: 5px;
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 20px;
+}
+
+.delete-modal-body .delete-modal-btn-container {
+  text-align: center;
+}
+
+.delete-modal-body .delete-modal-btn-container .delete-modal-btn {
+  border: 2px solid black;
+  font-weight: 600;
+  font-size: 16px;
 }
 
 /* width */
@@ -12115,6 +12144,11 @@ fieldset:disabled .btn {
   text-align: center;
 }
 
+.form-container .form-btn-container .form-btn-container-btn {
+  border: 2px solid black;
+  margin: 2px;
+}
+
 .form-container .form-select,
 .form-container .form-control {
   background-color: beige;
@@ -12174,7 +12208,16 @@ fieldset:disabled .btn {
   border-bottom: 2px solid black;
 }
 
-.list-container .list-item .list-item-header {
+.list-container .list-item .accordion-header {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: justify;
+      -ms-flex-pack: justify;
+          justify-content: space-between;
+}
+
+.list-container .list-item .accordion-header .list-item-header {
   width: 100%;
   display: -ms-grid;
   display: grid;
@@ -12185,34 +12228,46 @@ fieldset:disabled .btn {
           justify-content: space-evenly;
 }
 
-.list-container .list-item .list-item-header div {
+.list-container .list-item .accordion-header .list-item-header div {
   margin: 10px 20px;
 }
 
-.list-container .list-item .list-item-header div .list-item-label {
+.list-container .list-item .accordion-header .list-item-header div .list-item-label {
   font-size: 16px;
 }
 
-.list-container .list-item .list-item-header div .list-item-value {
+.list-container .list-item .accordion-header .list-item-header div .list-item-value {
   font-weight: 600;
   font-size: 18px;
   margin-left: 5px;
 }
 
+.list-container .list-item .accordion-header .list-item-header div .list-item-value.red-alert {
+  color: red;
+}
+
 @media screen and (max-width: 523px) {
-  .list-container .list-item .list-item-header {
+  .list-container .list-item .accordion-header .list-item-header {
     -ms-grid-columns: auto;
         grid-template-columns: auto;
   }
-  .list-container .list-item .list-item-header div {
+  .list-container .list-item .accordion-header .list-item-header div {
     margin: 5px 0;
   }
-  .list-container .list-item .list-item-header div .list-item-label {
+  .list-container .list-item .accordion-header .list-item-header div .list-item-label {
     font-size: 14px;
   }
-  .list-container .list-item .list-item-header div .list-item-value {
+  .list-container .list-item .accordion-header .list-item-header div .list-item-value {
     font-size: 16px;
   }
+}
+
+.list-container .list-item .accordion-header .list-item-delete {
+  padding: 5px 20px;
+}
+
+.list-container .list-item .accordion-header .list-item-delete .item-delete {
+  font-size: 20px;
 }
 
 .list-container .list-item .accordion-body .list-item-body {
@@ -12236,6 +12291,7 @@ fieldset:disabled .btn {
 .list-container .list-item .accordion-body .list-item-body div .list-item-body-btn {
   border: 2px solid black;
   font-weight: bold;
+  margin: 2px;
 }
 
 @media screen and (max-width: 523px) {
@@ -12307,5 +12363,9 @@ fieldset:disabled .btn {
 .filter-item .filter-body .form-btn-container .apply-filter-btn {
   font-size: 16px;
   font-weight: 600;
+}
+
+.submission-modal-body {
+  background-color: beige;
 }
 /*# sourceMappingURL=style.css.map */

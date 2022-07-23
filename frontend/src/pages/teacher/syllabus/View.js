@@ -8,6 +8,7 @@ import Filter from "../../../components/filter/Filter";
 import Accordion from "react-bootstrap/Accordion";
 import Axios from "axios";
 import jwt_decode from "jwt-decode";
+import { storage } from "../../../firebase/index";
 
 const View = () => {
   const [toastComponents, setToastComponents] = useState([]);
@@ -107,6 +108,70 @@ const View = () => {
       }
     }
   };
+  const handleDelete = async (syllabusObj) => {
+    try {
+      const response = await Axios.delete(
+        "http://localhost:5000/syllabus/deleteSyllabus",
+        {
+          params: {
+            syllabusId: syllabusObj.id,
+          },
+          headers: {
+            Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+          },
+        }
+      );
+      if (response.data.status === "Success") {
+        console.log("Syllabus deleted successfully!!");
+        try {
+          if(syllabusObj.images && syllabusObj.images.length) {
+            for(let file of syllabusObj.images) {
+              const deleteSyllabus = storage.ref(
+                `images/syllabus/${file.name}`
+              );
+              await deleteSyllabus.delete();
+            }
+          }
+          displayToast(
+            "success",
+            "Success",
+            "Syllabus deleted successfully."
+          );
+          getSyllabus();
+        } catch (err) {
+          console.log(
+            "Failed to delete image. Please contact admin!!"
+          );
+          displayToast(
+            "danger",
+            "Error",
+            "Failed to delete image. Please contact admin."
+          );
+          getSyllabus();
+          if (err.response.data.type === "TokenExpiredError") {
+            displayToast(
+              "danger",
+              "Error",
+              "Session expired. Please login again."
+            );
+            setTimeout(() => {
+              navigate("/");
+            }, 2000);
+          }
+        }
+      }
+    } catch (error) {
+      console.log("Syllabus deletion failed!!", error);
+      displayToast("danger", "Error", "Syllabus deletion failed.");
+      getSyllabus();
+      if (error.response.data.type === "TokenExpiredError") {
+        displayToast("danger", "Error", "Session expired. Please login again.");
+        setTimeout(() => {
+          navigate("/");
+        }, 2000);
+      }
+    }
+  };
   return (
     <>
       {isFetchingSyllabus ? (
@@ -118,7 +183,7 @@ const View = () => {
           <Filter page="Syllabus" filter={filter} />
           <Accordion defaultActiveKey="0" className="list-container">
             {syllabusList.map((syllabus) => {
-              return <AccordionItem {...syllabus} key={syllabus.id} />;
+              return <AccordionItem {...syllabus} key={syllabus.id} deleteItem={() => handleDelete(syllabus)}/>;
             })}
           </Accordion>
           <ToastContainer

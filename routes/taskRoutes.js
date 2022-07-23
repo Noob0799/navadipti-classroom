@@ -206,11 +206,15 @@ router.delete("/deleteTask", async (req, res) => {
       const { role } = jwt.verify(token, process.env.SECRET_KEY);
       if (role === "principal" || role === "teacher") {
         try {
-          const list = await pool.query(
+          let imageArr = [];
+          const taskList = await pool.query(
             `SELECT image_id from taskimages WHERE task_id = '${taskId}'`
           );
-          if (list.rows.length) {
-            const imageArr = list.rows;
+          const completedTaskList = await pool.query(
+            `SELECT image_id from completedtaskimages WHERE task_id = '${taskId}'`
+          );
+          imageArr = [...taskList.rows, ...completedTaskList.rows];
+          if (imageArr.length) {
             for (let image of imageArr) {
               await pool.query(
                 `DELETE FROM images WHERE image_id = '${image.image_id}'`

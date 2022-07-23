@@ -1,0 +1,18 @@
+.delete-modal-body {
+    display: flex;
+    flex-direction: column;
+    .delete-modal-content {
+        padding: 5px;
+        font-size: 20px;
+        font-weight: 600;
+        margin-bottom: 20px;
+    }
+    .delete-modal-btn-container {
+        text-align: center;
+        .delete-modal-btn {
+            border: 2px solid black;
+            font-weight: 600;
+            font-size: 16px;
+        }
+    }
+}

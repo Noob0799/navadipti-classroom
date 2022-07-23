@@ -23,7 +23,7 @@ const LandingOptions = () => {
   }, []);
 
   const handleRouting = (route) => {
-    navigate(`/${role}/${route}`);
+    route ? navigate(`/${role}/${route}`) : navigate("/");
   };
   return (
     <div className="classroom-options-container">
@@ -51,9 +51,9 @@ const LandingOptions = () => {
       <Button
         variant="light"
         className="classroom-options"
-        onClick={() => handleRouting("qa")}
+        onClick={() => handleRouting("")}
       >
-        Q/A
+        Home
       </Button>
     </div>
   );

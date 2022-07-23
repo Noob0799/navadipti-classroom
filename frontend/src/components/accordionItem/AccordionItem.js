@@ -3,10 +3,14 @@ import Accordion from "react-bootstrap/Accordion";
 import Button from "react-bootstrap/Button";
 import ImageViewerModal from "../imageViewerModal/ImageViewerModal";
 import TaskSubmissionModal from "../tasksubmissionModal/TaskSubmissionModal";
+import ConfirmDeletionModal from "../confirmDeletionModal/ConfirmDeletionModal";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faTrash } from "@fortawesome/free-solid-svg-icons";
 
 const AccordionItem = (props) => {
   const [showModal, setShowModal] = useState(false);
   const [showSubmissionModal, setShowSubmissionModal] = useState(false);
+  const [showDeletionModal, setShowDeletionModal] = useState(false);
   const [option, setOption] = useState("task");
 
   const handleShow = (option) => {
@@ -16,6 +20,15 @@ const AccordionItem = (props) => {
   const handleClose = () => setShowModal(false);
   const handleSubmissionShow = () => setShowSubmissionModal(true);
   const handleSubmissionClose = () => setShowSubmissionModal(false);
+  const handleDeletionClose = () => setShowDeletionModal(false);
+  const handleDelete = (e) => {
+    e.stopPropagation();
+    setShowDeletionModal(true);
+  };
+  const deleteItem = () => {
+    setShowDeletionModal(false);
+    props.deleteItem();
+  };
   return (
     <>
       <Accordion.Item eventKey={props.id} className="list-item">
@@ -70,6 +83,11 @@ const AccordionItem = (props) => {
               </div>
             )}
           </div>
+          {props.role !== "student" && (
+            <div className="list-item-delete">
+              <FontAwesomeIcon icon={faTrash} className="item-delete" onClick={handleDelete}/>
+            </div>
+          )}
         </Accordion.Header>
         <Accordion.Body>
           <div className="list-item-body">
@@ -116,6 +134,11 @@ const AccordionItem = (props) => {
         show={showSubmissionModal}
         close={handleSubmissionClose}
         id={props.id}
+      />
+      <ConfirmDeletionModal
+        show={showDeletionModal}
+        close={handleDeletionClose}
+        handleDelete={() => deleteItem()}
       />
     </>
   );

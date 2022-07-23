@@ -4,7 +4,7 @@ import Container from "react-bootstrap/Container";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
+import { faArrowLeft, faPowerOff } from "@fortawesome/free-solid-svg-icons";
 import jwt_decode from "jwt-decode";
 
 const Wrapper = ({ ChildComponent }) => {
@@ -58,7 +58,13 @@ const Wrapper = ({ ChildComponent }) => {
                 </>
               )}
             </Nav>
-            <Nav></Nav>
+            <Nav>
+            <FontAwesomeIcon
+                icon={faPowerOff}
+                className="signout-btn"
+                onClick={() => navigate("/")}
+              />
+            </Nav>
           </Container>
         </Navbar>
         <ChildComponent mode={tab} viewTab={viewTab} />

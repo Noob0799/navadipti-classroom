@@ -8,6 +8,7 @@ import Filter from "../../../components/filter/Filter";
 import Accordion from "react-bootstrap/Accordion";
 import Axios from "axios";
 import jwt_decode from "jwt-decode";
+import { storage } from "../../../firebase/index";
 
 const View = () => {
   const [toastComponents, setToastComponents] = useState([]);
@@ -109,6 +110,78 @@ const View = () => {
       }
     }
   };
+  const handleDelete = async (taskObj) => {
+    try {
+      const response = await Axios.delete(
+        "http://localhost:5000/task/deleteTask",
+        {
+          params: {
+            taskId: taskObj.id,
+          },
+          headers: {
+            Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+          },
+        }
+      );
+      if (response.data.status === "Success") {
+        console.log("Task deleted successfully!!");
+        try {
+          if(taskObj.images && taskObj.images.length) {
+            for(let file of taskObj.images) {
+              const deleteTask = storage.ref(
+                `images/task/${file.name}`
+              );
+              await deleteTask.delete();
+            }
+          }
+          if(taskObj.submittedImages && taskObj.submittedImages.length) {
+            for(let file of taskObj.submittedImages) {
+              const deleteTask = storage.ref(
+                `images/completedTask/${file.name}`
+              );
+              await deleteTask.delete();
+            }
+          }
+          displayToast(
+            "success",
+            "Success",
+            "Task deleted successfully."
+          );
+          getTasks();
+        } catch (err) {
+          console.log(
+            "Failed to delete image. Please contact admin!!"
+          );
+          displayToast(
+            "danger",
+            "Error",
+            "Failed to delete image. Please contact admin."
+          );
+          getTasks();
+          if (err.response.data.type === "TokenExpiredError") {
+            displayToast(
+              "danger",
+              "Error",
+              "Session expired. Please login again."
+            );
+            setTimeout(() => {
+              navigate("/");
+            }, 2000);
+          }
+        }
+      }
+    } catch (error) {
+      console.log("Task deletion failed!!", error);
+      displayToast("danger", "Error", "Task deletion failed.");
+      getTasks();
+      if (error.response.data.type === "TokenExpiredError") {
+        displayToast("danger", "Error", "Session expired. Please login again.");
+        setTimeout(() => {
+          navigate("/");
+        }, 2000);
+      }
+    }
+  };
   return (
     <>
       {isFetchingTask ? (
@@ -120,7 +193,7 @@ const View = () => {
           <Filter page="Task" filter={filter} />
           <Accordion defaultActiveKey="0" className="list-container">
             {taskList.map((task) => {
-              return <AccordionItem {...task} key={task.id} role={role} />;
+              return <AccordionItem {...task} key={task.id} role={role} deleteItem={() => handleDelete(task)}/>;
             })}
           </Accordion>
           <ToastContainer
