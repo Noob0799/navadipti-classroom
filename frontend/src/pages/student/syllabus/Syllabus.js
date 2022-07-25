@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 import Spinner from "react-bootstrap/Spinner";
 import AccordionItem from "../../../components/accordionItem/AccordionItem";
 import Filter from "../../../components/filter/Filter";
@@ -37,14 +38,15 @@ const Syllabus = () => {
       if (response.data.status === "Success") {
         setIsFetchingSyllabus(false);
         console.log("Syllabus fetched successfully!!");
-
+        toast.success("Syllabus fetched successfully!!");
         setSyllabusList(response.data.syllabusList);
       }
     } catch (error) {
       setIsFetchingSyllabus(false);
       console.log("Syllabus fetch failed!!", error);
-
+      toast.error("Syllabus fetch failed!!");
       if (error.response.data.type === "TokenExpiredError") {
+        toast.error("Session timeout. Please login again!!");
         setTimeout(() => {
           navigate("/");
         }, 2000);
@@ -73,14 +75,15 @@ const Syllabus = () => {
       if (response.data.status === "Success") {
         setIsFetchingSyllabus(false);
         console.log("Syllabus fetched successfully!!");
-
+        toast.success("Syllabus fetched successfully!!");
         setSyllabusList(response.data.syllabusList);
       }
     } catch (error) {
       setIsFetchingSyllabus(false);
       console.log("Syllabus fetch failed!!", error);
-
+      toast.error("Syllabus fetch failed!!");
       if (error.response.data.type === "TokenExpiredError") {
+        toast.error("Session timeout. Please login again!!");
         setTimeout(() => {
           navigate("/");
         }, 2000);

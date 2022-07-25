@@ -7,6 +7,7 @@ import ImageViewerModal from "../../../components/imageViewerModal/ImageViewerMo
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { storage } from "../../../firebase/index";
+import { toast } from "react-toastify";
 
 const Create = ({ viewAnnouncement }) => {
   const [showModal, setShowModal] = useState(false);
@@ -62,6 +63,7 @@ const Create = ({ viewAnnouncement }) => {
             (snapshot) => {},
             (error) => {
               console.log("Firebase image upload error!!", error);
+              toast.error("Firebase image upload error!!");
             },
             async () => {
               url = await storage
@@ -87,6 +89,7 @@ const Create = ({ viewAnnouncement }) => {
                   );
                   if (response.data.status === "Success") {
                     console.log("Announcement created successfully!!");
+                    toast.success("Announcement created successfully!!");
                     setTimeout(() => {
                       setIsCreatingAnnouncement(false);
                       viewAnnouncement();
@@ -95,12 +98,14 @@ const Create = ({ viewAnnouncement }) => {
                 } catch (error) {
                   setIsCreatingAnnouncement(false);
                   console.log("Announcement creation failed!!", error);
+                  toast.error("Announcement creation failed!!");
                   try {
                     const deleteAnnouncement = storage.ref(
                       `images/announcement/${fileName}`
                     );
                     await deleteAnnouncement.delete();
                     if (error.response.data.type === "TokenExpiredError") {
+                      toast.error("Session timeout. Please login again!!");
                       setTimeout(() => {
                         navigate("/");
                       }, 2000);
@@ -109,7 +114,9 @@ const Create = ({ viewAnnouncement }) => {
                     console.log(
                       "Failed to delete uploaded image. Please contact admin!!"
                     );
+                    toast.error("Failed to delete uploaded image. Please contact admin!!");
                     if (error.response.data.type === "TokenExpiredError") {
+                      toast.error("Session timeout. Please login again!!");
                       setTimeout(() => {
                         navigate("/");
                       }, 2000);
@@ -133,7 +140,7 @@ const Create = ({ viewAnnouncement }) => {
           );
           if (response.data.status === "Success") {
             console.log("Announcement created successfully!!");
-
+            toast.success("Announcement created successfully!!");
             setTimeout(() => {
               setIsCreatingAnnouncement(false);
               viewAnnouncement();
@@ -142,8 +149,9 @@ const Create = ({ viewAnnouncement }) => {
         } catch (error) {
           setIsCreatingAnnouncement(false);
           console.log("Announcement creation failed!!", error);
-
+          toast.error("Announcement creation failed!!");
           if (error.response.data.type === "TokenExpiredError") {
+            toast.error("Session timeout. Please login again!!");
             setTimeout(() => {
               navigate("/");
             }, 2000);

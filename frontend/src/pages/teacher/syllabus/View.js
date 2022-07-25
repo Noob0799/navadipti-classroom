@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 import Spinner from "react-bootstrap/Spinner";
 import AccordionItem from "../../../components/accordionItem/AccordionItem";
 import Filter from "../../../components/filter/Filter";
@@ -38,14 +39,15 @@ const View = () => {
       if (response.data.status === "Success") {
         setIsFetchingSyllabus(false);
         console.log("Syllabus fetched successfully!!");
-
+        toast.success("Syllabus fetched successfully!!");
         setSyllabusList(response.data.syllabusList);
       }
     } catch (error) {
       setIsFetchingSyllabus(false);
       console.log("Syllabus fetch failed!!", error);
-
+      toast.error("Syllabus fetch failed!!");
       if (error.response.data.type === "TokenExpiredError") {
+        toast.error("Session timeout. Please login again!!");
         setTimeout(() => {
           navigate("/");
         }, 2000);
@@ -74,14 +76,15 @@ const View = () => {
       if (response.data.status === "Success") {
         setIsFetchingSyllabus(false);
         console.log("Syllabus fetched successfully!!");
-
+        toast.success("Syllabus fetched successfully!!");
         setSyllabusList(response.data.syllabusList);
       }
     } catch (error) {
       setIsFetchingSyllabus(false);
       console.log("Syllabus fetch failed!!", error);
-
+      toast.error("Syllabus fetch failed!!");
       if (error.response.data.type === "TokenExpiredError") {
+        toast.error("Session timeout. Please login again!!");
         setTimeout(() => {
           navigate("/");
         }, 2000);
@@ -103,6 +106,7 @@ const View = () => {
       );
       if (response.data.status === "Success") {
         console.log("Syllabus deleted successfully!!");
+        toast.success("Syllabus deleted successfully!!");
         try {
           if (syllabusObj.images && syllabusObj.images.length) {
             for (let file of syllabusObj.images) {
@@ -116,9 +120,10 @@ const View = () => {
           getSyllabus();
         } catch (err) {
           console.log("Failed to delete image. Please contact admin!!");
-
+          toast.error("Failed to delete image. Please contact admin!!");
           getSyllabus();
           if (err.response.data.type === "TokenExpiredError") {
+            toast.error("Session timeout. Please login again!!");
             setTimeout(() => {
               navigate("/");
             }, 2000);
@@ -127,9 +132,10 @@ const View = () => {
       }
     } catch (error) {
       console.log("Syllabus deletion failed!!", error);
-
+      toast.error("Syllabus deletion failed!!");
       getSyllabus();
       if (error.response.data.type === "TokenExpiredError") {
+        toast.error("Session timeout. Please login again!!");
         setTimeout(() => {
           navigate("/");
         }, 2000);

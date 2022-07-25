@@ -1,4 +1,6 @@
 import { Route, Routes } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import Welcome from "./pages/welcome/Welcome";
 import Wrapper from "./pages/wrapper/Wrapper";
 import Landing from "./pages/landing/Landing";
@@ -14,15 +16,46 @@ const App = () => {
   return (
     <>
       <Routes>
-        <Route path="/" element={<Welcome/>}/>
-        <Route path="/landing" element={<Landing ChildComponent={LandingOptions}/>}/>
-        <Route path="/teacher/taskWork" element={<Wrapper ChildComponent={TeacherTaskWork}/>}/>
-        <Route path="/teacher/syllabus" element={<Wrapper ChildComponent={TeacherSyllabus}/>}/>
-        <Route path="/teacher/announcement" element={<Wrapper ChildComponent={TeacherAnnouncement}/>}/>
-        <Route path="/student/taskWork" element={<Wrapper ChildComponent={StudentTaskWork}/>}/>
-        <Route path="/student/syllabus" element={<Wrapper ChildComponent={StudentSyllabus}/>}/>
-        <Route path="/student/announcement" element={<Wrapper ChildComponent={StudentAnnouncement}/>}/>
+        <Route path="/" element={<Welcome />} />
+        <Route
+          path="/landing"
+          element={<Landing ChildComponent={LandingOptions} />}
+        />
+        <Route
+          path="/teacher/taskWork"
+          element={<Wrapper ChildComponent={TeacherTaskWork} />}
+        />
+        <Route
+          path="/teacher/syllabus"
+          element={<Wrapper ChildComponent={TeacherSyllabus} />}
+        />
+        <Route
+          path="/teacher/announcement"
+          element={<Wrapper ChildComponent={TeacherAnnouncement} />}
+        />
+        <Route
+          path="/student/taskWork"
+          element={<Wrapper ChildComponent={StudentTaskWork} />}
+        />
+        <Route
+          path="/student/syllabus"
+          element={<Wrapper ChildComponent={StudentSyllabus} />}
+        />
+        <Route
+          path="/student/announcement"
+          element={<Wrapper ChildComponent={StudentAnnouncement} />}
+        />
       </Routes>
+      <ToastContainer
+        position="top-center"
+        autoClose={2000}
+        hideProgressBar={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+      />
     </>
   );
 };

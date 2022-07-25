@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 import Spinner from "react-bootstrap/Spinner";
 import AccordionItem from "../../../components/accordionItem/AccordionItem";
 import Filter from "../../../components/filter/Filter";
@@ -36,14 +37,15 @@ const TaskWork = () => {
       if (response.data.status === "Success") {
         setIsFetchingTask(false);
         console.log("Tasks fetched successfully!!");
-
+        toast.success("Tasks fetched successfully!!");
         setTaskList(response.data.taskList);
       }
     } catch (error) {
       setIsFetchingTask(false);
       console.log("Tasks fetch failed!!", error);
-
+      toast.error("Tasks fetch failed!!");
       if (error.response.data.type === "TokenExpiredError") {
+        toast.error("Session timeout. Please login again!!");
         setTimeout(() => {
           navigate("/");
         }, 2000);
@@ -69,14 +71,15 @@ const TaskWork = () => {
       if (response.data.status === "Success") {
         setIsFetchingTask(false);
         console.log("Tasks fetched successfully!!");
-
+        toast.success("Tasks fetched successfully!!");
         setTaskList(response.data.taskList);
       }
     } catch (error) {
       setIsFetchingTask(false);
       console.log("Tasks fetch failed!!", error);
-
+      toast.error("Tasks fetch failed!!");
       if (error.response.data.type === "TokenExpiredError") {
+        toast.error("Session timeout. Please login again!!");
         setTimeout(() => {
           navigate("/");
         }, 2000);

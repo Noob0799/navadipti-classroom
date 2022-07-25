@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 import Spinner from "react-bootstrap/Spinner";
 import AccordionItem from "../../../components/accordionItem/AccordionItem";
 import Filter from "../../../components/filter/Filter";
@@ -37,14 +38,15 @@ const Announcement = () => {
       if (response.data.status === "Success") {
         setIsFetchingAnnouncement(false);
         console.log("Announcements fetched successfully!!");
-
+        toast.success("Announcements fetched successfully!!");
         setAnnouncementList(response.data.announcementList);
       }
     } catch (error) {
       setIsFetchingAnnouncement(false);
       console.log("Announcements fetch failed!!", error);
-
+      toast.error("Announcements fetch failed!!");
       if (error.response.data.type === "TokenExpiredError") {
+        toast.error("Session timeout. Please login again!!");
         setTimeout(() => {
           navigate("/");
         }, 2000);
@@ -73,14 +75,15 @@ const Announcement = () => {
       if (response.data.status === "Success") {
         setIsFetchingAnnouncement(false);
         console.log("Announcements fetched successfully!!");
-
+        toast.success("Announcements fetched successfully!!");
         setAnnouncementList(response.data.announcementList);
       }
     } catch (error) {
       setIsFetchingAnnouncement(false);
       console.log("Announcements fetch failed!!", error);
-
+      toast.error("Announcements fetch failed!!");
       if (error.response.data.type === "TokenExpiredError") {
+        toast.error("Session timeout. Please login again!!");
         setTimeout(() => {
           navigate("/");
         }, 2000);

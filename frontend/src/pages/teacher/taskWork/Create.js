@@ -7,6 +7,7 @@ import jwt_decode from "jwt-decode";
 import { useRef, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { storage } from "../../../firebase/index";
+import { toast } from "react-toastify";
 
 const Create = ({ viewTask }) => {
   const [showModal, setShowModal] = useState(false);
@@ -16,7 +17,6 @@ const Create = ({ viewTask }) => {
   const [dueDate, setDueDate] = useState("");
   const [selectedImageFiles, setSelectedImageFiles] = useState([]);
   const [imageFiles, setImageFiles] = useState([]);
-
   const [isCreatingTask, setIsCreatingTask] = useState(false);
   const subject = useRef("English");
   const term = useRef("CT1");
@@ -64,6 +64,7 @@ const Create = ({ viewTask }) => {
           (snapshot) => {},
           (error) => {
             console.log("Firebase image upload error!!", error);
+            toast.error("Firebase image upload error!!");
           },
           async () => {
             url = await storage
@@ -89,7 +90,7 @@ const Create = ({ viewTask }) => {
                 );
                 if (response.data.status === "Success") {
                   console.log("Task created successfully!!");
-
+                  toast.success("Task created successfully!!");
                   setTimeout(() => {
                     setIsCreatingTask(false);
                     viewTask();
@@ -98,11 +99,12 @@ const Create = ({ viewTask }) => {
               } catch (error) {
                 setIsCreatingTask(false);
                 console.log("Task creation failed!!", error);
-
+                toast.error("Task creation failed!!");
                 try {
                   const deleteTask = storage.ref(`images/task/${fileName}`);
                   await deleteTask.delete();
                   if (error.response.data.type === "TokenExpiredError") {
+                    toast.error("Session timeout. Please login again!!");
                     setTimeout(() => {
                       navigate("/");
                     }, 2000);
@@ -111,8 +113,11 @@ const Create = ({ viewTask }) => {
                   console.log(
                     "Failed to delete uploaded image. Please contact admin!!"
                   );
-
+                  toast.error(
+                    "Failed to delete uploaded image. Please contact admin!!"
+                  );
                   if (error.response.data.type === "TokenExpiredError") {
+                    toast.error("Session timeout. Please login again!!");
                     setTimeout(() => {
                       navigate("/");
                     }, 2000);

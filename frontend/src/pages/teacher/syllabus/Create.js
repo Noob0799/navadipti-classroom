@@ -8,6 +8,7 @@ import jwt_decode from "jwt-decode";
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { storage } from "../../../firebase/index";
+import { toast } from "react-toastify";
 
 const Create = ({ viewSyllabus }) => {
   const [showModal, setShowModal] = useState(false);
@@ -15,7 +16,6 @@ const Create = ({ viewSyllabus }) => {
   const [studentClass, setStudentClass] = useState("Nursery");
   const [selectedImageFiles, setSelectedImageFiles] = useState([]);
   const [imageFiles, setImageFiles] = useState([]);
-
   const [isCreatingSyllabus, setIsCreatingSyllabus] = useState(false);
   const navigate = useNavigate();
   const subject = useRef("English");
@@ -63,6 +63,7 @@ const Create = ({ viewSyllabus }) => {
           (snapshot) => {},
           (error) => {
             console.log("Firebase image upload error!!", error);
+            toast.error("Firebase image upload error!!");
           },
           async () => {
             url = await storage
@@ -88,7 +89,7 @@ const Create = ({ viewSyllabus }) => {
                 );
                 if (response.data.status === "Success") {
                   console.log("Syllabus created successfully!!");
-
+                  toast.success("Syllabus created successfully!!");
                   setTimeout(() => {
                     setIsCreatingSyllabus(false);
                     viewSyllabus();
@@ -97,13 +98,14 @@ const Create = ({ viewSyllabus }) => {
               } catch (error) {
                 setIsCreatingSyllabus(false);
                 console.log("Syllabus creation failed!!", error);
-
+                toast.error("Syllabus creation failed!!");
                 try {
                   const deleteSyllabus = storage.ref(
                     `images/syllabus/${fileName}`
                   );
                   await deleteSyllabus.delete();
                   if (error.response.data.type === "TokenExpiredError") {
+                    toast.error("Session timeout. Please login again!!");
                     setTimeout(() => {
                       navigate("/");
                     }, 2000);
@@ -112,8 +114,11 @@ const Create = ({ viewSyllabus }) => {
                   console.log(
                     "Failed to delete uploaded image. Please contact admin!!"
                   );
-
+                  toast.error(
+                    "Failed to delete uploaded image. Please contact admin!!"
+                  );
                   if (error.response.data.type === "TokenExpiredError") {
+                    toast.error("Session timeout. Please login again!!");
                     setTimeout(() => {
                       navigate("/");
                     }, 2000);

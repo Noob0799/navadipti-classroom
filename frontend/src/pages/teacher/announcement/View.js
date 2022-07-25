@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 import Spinner from "react-bootstrap/Spinner";
 import AccordionItem from "../../../components/accordionItem/AccordionItem";
 import Filter from "../../../components/filter/Filter";
@@ -38,14 +39,15 @@ const View = () => {
       if (response.data.status === "Success") {
         setIsFetchingAnnouncement(false);
         console.log("Announcements fetched successfully!!");
-
+        toast.success("Announcements fetched successfully!!");
         setAnnouncementList(response.data.announcementList);
       }
     } catch (error) {
       setIsFetchingAnnouncement(false);
       console.log("Announcements fetch failed!!", error);
-
+      toast.error("Announcements fetch failed!!");
       if (error.response.data.type === "TokenExpiredError") {
+        toast.error("Session timeout. Please login again!!");
         setTimeout(() => {
           navigate("/");
         }, 2000);
@@ -74,14 +76,15 @@ const View = () => {
       if (response.data.status === "Success") {
         setIsFetchingAnnouncement(false);
         console.log("Announcements fetched successfully!!");
-
+        toast.success("Announcements fetched successfully!!");
         setAnnouncementList(response.data.announcementList);
       }
     } catch (error) {
       setIsFetchingAnnouncement(false);
       console.log("Announcements fetch failed!!", error);
-
+      toast.error("Announcements fetch failed!!");
       if (error.response.data.type === "TokenExpiredError") {
+        toast.error("Session timeout. Please login again!!");
         setTimeout(() => {
           navigate("/");
         }, 2000);
@@ -112,13 +115,14 @@ const View = () => {
               await deleteAnnouncement.delete();
             }
           }
-
+          toast.success("Announcement deleted successfully!!");
           getAnnouncements();
         } catch (err) {
           console.log("Failed to delete image. Please contact admin!!");
-
+          toast.error("Failed to delete image. Please contact admin!!");
           getAnnouncements();
           if (err.response.data.type === "TokenExpiredError") {
+            toast.error("Session timeout. Please login again!!");
             setTimeout(() => {
               navigate("/");
             }, 2000);
@@ -127,9 +131,10 @@ const View = () => {
       }
     } catch (error) {
       console.log("Announcement deletion failed!!", error);
-
+      toast.error("Announcement deletion failed!!");
       getAnnouncements();
       if (error.response.data.type === "TokenExpiredError") {
+        toast.error("Session timeout. Please login again!!");
         setTimeout(() => {
           navigate("/");
         }, 2000);
