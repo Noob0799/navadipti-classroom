@@ -1,8 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Spinner from "react-bootstrap/Spinner";
-import ToastContainer from "react-bootstrap/ToastContainer";
-import Toast from "../../../components/toast/Toast";
 import AccordionItem from "../../../components/accordionItem/AccordionItem";
 import Filter from "../../../components/filter/Filter";
 import Accordion from "react-bootstrap/Accordion";
@@ -11,7 +9,6 @@ import jwt_decode from "jwt-decode";
 import { storage } from "../../../firebase/index";
 
 const View = () => {
-  const [toastComponents, setToastComponents] = useState([]);
   const [isFetchingTask, setIsFetchingTask] = useState(false);
   const [taskList, setTaskList] = useState([]);
   const [role, setRole] = useState("teacher");
@@ -40,43 +37,21 @@ const View = () => {
       if (response.data.status === "Success") {
         setIsFetchingTask(false);
         console.log("Tasks fetched successfully!!");
-        displayToast("success", "Success", "Tasks fetched successfully.");
+
         setTaskList(response.data.taskList);
       }
     } catch (error) {
       setIsFetchingTask(false);
       console.log("Tasks fetch failed!!", error);
-      displayToast("danger", "Error", "Tasks fetch failed.");
+
       if (error.response.data.type === "TokenExpiredError") {
-        displayToast("danger", "Error", "Session expired. Please login again.");
         setTimeout(() => {
           navigate("/");
         }, 2000);
       }
     }
   };
-  const displayToast = (variant, heading, body) => {
-    if (variant === "danger") {
-      setToastComponents((prevState) => {
-        return [
-          ...prevState,
-          {
-            variant,
-            heading,
-            body,
-          },
-        ];
-      });
-    } else {
-      setToastComponents([
-        {
-          variant,
-          heading,
-          body,
-        },
-      ]);
-    }
-  };
+
   const filter = async (obj) => {
     const params = {};
     for (let key in obj) {
@@ -95,15 +70,14 @@ const View = () => {
       if (response.data.status === "Success") {
         setIsFetchingTask(false);
         console.log("Tasks fetched successfully!!");
-        displayToast("success", "Success", "Tasks fetched successfully.");
+
         setTaskList(response.data.taskList);
       }
     } catch (error) {
       setIsFetchingTask(false);
       console.log("Tasks fetch failed!!", error);
-      displayToast("danger", "Error", "Tasks fetch failed.");
+
       if (error.response.data.type === "TokenExpiredError") {
-        displayToast("danger", "Error", "Session expired. Please login again.");
         setTimeout(() => {
           navigate("/");
         }, 2000);
@@ -126,44 +100,27 @@ const View = () => {
       if (response.data.status === "Success") {
         console.log("Task deleted successfully!!");
         try {
-          if(taskObj.images && taskObj.images.length) {
-            for(let file of taskObj.images) {
-              const deleteTask = storage.ref(
-                `images/task/${file.name}`
-              );
+          if (taskObj.images && taskObj.images.length) {
+            for (let file of taskObj.images) {
+              const deleteTask = storage.ref(`images/task/${file.name}`);
               await deleteTask.delete();
             }
           }
-          if(taskObj.submittedImages && taskObj.submittedImages.length) {
-            for(let file of taskObj.submittedImages) {
+          if (taskObj.submittedImages && taskObj.submittedImages.length) {
+            for (let file of taskObj.submittedImages) {
               const deleteTask = storage.ref(
                 `images/completedTask/${file.name}`
               );
               await deleteTask.delete();
             }
           }
-          displayToast(
-            "success",
-            "Success",
-            "Task deleted successfully."
-          );
+
           getTasks();
         } catch (err) {
-          console.log(
-            "Failed to delete image. Please contact admin!!"
-          );
-          displayToast(
-            "danger",
-            "Error",
-            "Failed to delete image. Please contact admin."
-          );
+          console.log("Failed to delete image. Please contact admin!!");
+
           getTasks();
           if (err.response.data.type === "TokenExpiredError") {
-            displayToast(
-              "danger",
-              "Error",
-              "Session expired. Please login again."
-            );
             setTimeout(() => {
               navigate("/");
             }, 2000);
@@ -172,10 +129,9 @@ const View = () => {
       }
     } catch (error) {
       console.log("Task deletion failed!!", error);
-      displayToast("danger", "Error", "Task deletion failed.");
+
       getTasks();
       if (error.response.data.type === "TokenExpiredError") {
-        displayToast("danger", "Error", "Session expired. Please login again.");
         setTimeout(() => {
           navigate("/");
         }, 2000);
@@ -193,23 +149,16 @@ const View = () => {
           <Filter page="Task" filter={filter} />
           <Accordion defaultActiveKey="0" className="list-container">
             {taskList.map((task) => {
-              return <AccordionItem {...task} key={task.id} role={role} deleteItem={() => handleDelete(task)}/>;
+              return (
+                <AccordionItem
+                  {...task}
+                  key={task.id}
+                  role={role}
+                  deleteItem={() => handleDelete(task)}
+                />
+              );
             })}
           </Accordion>
-          <ToastContainer
-            className="p-3 toast-stack-vertical"
-            position="top-center"
-          >
-            {toastComponents.map((toastComponent, idx) => (
-              <Toast
-                key={idx}
-                closeToast={() => setToastComponents([])}
-                variant={toastComponent.variant}
-                toastHeading={toastComponent.heading}
-                toastBody={toastComponent.body}
-              />
-            ))}
-          </ToastContainer>
         </>
       )}
     </>

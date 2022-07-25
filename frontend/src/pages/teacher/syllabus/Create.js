@@ -2,9 +2,7 @@ import React from "react";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import Spinner from "react-bootstrap/Spinner";
-import ToastContainer from "react-bootstrap/ToastContainer";
 import ImageViewerModal from "../../../components/imageViewerModal/ImageViewerModal";
-import Toast from "../../../components/toast/Toast";
 import Axios from "axios";
 import jwt_decode from "jwt-decode";
 import { useState, useRef, useEffect } from "react";
@@ -17,7 +15,7 @@ const Create = ({ viewSyllabus }) => {
   const [studentClass, setStudentClass] = useState("Nursery");
   const [selectedImageFiles, setSelectedImageFiles] = useState([]);
   const [imageFiles, setImageFiles] = useState([]);
-  const [toastComponents, setToastComponents] = useState([]);
+
   const [isCreatingSyllabus, setIsCreatingSyllabus] = useState(false);
   const navigate = useNavigate();
   const subject = useRef("English");
@@ -65,7 +63,6 @@ const Create = ({ viewSyllabus }) => {
           (snapshot) => {},
           (error) => {
             console.log("Firebase image upload error!!", error);
-            displayToast("danger", "Error", "Firebase image upload error.");
           },
           async () => {
             url = await storage
@@ -91,11 +88,7 @@ const Create = ({ viewSyllabus }) => {
                 );
                 if (response.data.status === "Success") {
                   console.log("Syllabus created successfully!!");
-                  displayToast(
-                    "success",
-                    "Success",
-                    "Syllabus created successfully."
-                  );
+
                   setTimeout(() => {
                     setIsCreatingSyllabus(false);
                     viewSyllabus();
@@ -104,18 +97,13 @@ const Create = ({ viewSyllabus }) => {
               } catch (error) {
                 setIsCreatingSyllabus(false);
                 console.log("Syllabus creation failed!!", error);
-                displayToast("danger", "Error", "Syllabus creation failed.");
+
                 try {
                   const deleteSyllabus = storage.ref(
                     `images/syllabus/${fileName}`
                   );
                   await deleteSyllabus.delete();
                   if (error.response.data.type === "TokenExpiredError") {
-                    displayToast(
-                      "danger",
-                      "Error",
-                      "Session expired. Please login again."
-                    );
                     setTimeout(() => {
                       navigate("/");
                     }, 2000);
@@ -124,17 +112,8 @@ const Create = ({ viewSyllabus }) => {
                   console.log(
                     "Failed to delete uploaded image. Please contact admin!!"
                   );
-                  displayToast(
-                    "danger",
-                    "Error",
-                    "Failed to delete uploaded image. Please contact admin."
-                  );
+
                   if (error.response.data.type === "TokenExpiredError") {
-                    displayToast(
-                      "danger",
-                      "Error",
-                      "Session expired. Please login again."
-                    );
                     setTimeout(() => {
                       navigate("/");
                     }, 2000);
@@ -149,28 +128,7 @@ const Create = ({ viewSyllabus }) => {
 
     setValidated(true);
   };
-  const displayToast = (variant, heading, body) => {
-    if (variant === "danger") {
-      setToastComponents((prevState) => {
-        return [
-          ...prevState,
-          {
-            variant,
-            heading,
-            body,
-          },
-        ];
-      });
-    } else {
-      setToastComponents([
-        {
-          variant,
-          heading,
-          body,
-        },
-      ]);
-    }
-  };
+
   const handleStudentClass = (e) => {
     setStudentClass(e.target.value);
   };
@@ -267,7 +225,7 @@ const Create = ({ viewSyllabus }) => {
         </Form.Group>
         <div className="form-btn-container">
           <Button type="submit" variant="success" disabled={isCreatingSyllabus}>
-          {isCreatingSyllabus ? (
+            {isCreatingSyllabus ? (
               <>
                 <Spinner
                   as="span"
@@ -302,20 +260,6 @@ const Create = ({ viewSyllabus }) => {
         close={handleClose}
         files={imageFiles}
       />
-      <ToastContainer
-        className="p-3 toast-stack-vertical"
-        position="top-center"
-      >
-        {toastComponents.map((toastComponent, idx) => (
-          <Toast
-            key={idx}
-            closeToast={() => setToastComponents([])}
-            variant={toastComponent.variant}
-            toastHeading={toastComponent.heading}
-            toastBody={toastComponent.body}
-          />
-        ))}
-      </ToastContainer>
     </>
   );
 };

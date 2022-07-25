@@ -1,8 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Spinner from "react-bootstrap/Spinner";
-import ToastContainer from "react-bootstrap/ToastContainer";
-import Toast from "../../../components/toast/Toast";
 import AccordionItem from "../../../components/accordionItem/AccordionItem";
 import Filter from "../../../components/filter/Filter";
 import Accordion from "react-bootstrap/Accordion";
@@ -11,7 +9,6 @@ import jwt_decode from "jwt-decode";
 import { storage } from "../../../firebase/index";
 
 const View = () => {
-  const [toastComponents, setToastComponents] = useState([]);
   const [isFetchingAnnouncement, setIsFetchingAnnouncement] = useState(false);
   const [announcementList, setAnnouncementList] = useState([]);
   const navigate = useNavigate();
@@ -41,47 +38,21 @@ const View = () => {
       if (response.data.status === "Success") {
         setIsFetchingAnnouncement(false);
         console.log("Announcements fetched successfully!!");
-        displayToast(
-          "success",
-          "Success",
-          "Announcements fetched successfully."
-        );
+
         setAnnouncementList(response.data.announcementList);
       }
     } catch (error) {
       setIsFetchingAnnouncement(false);
       console.log("Announcements fetch failed!!", error);
-      displayToast("danger", "Error", "Announcements fetch failed.");
+
       if (error.response.data.type === "TokenExpiredError") {
-        displayToast("danger", "Error", "Session expired. Please login again.");
         setTimeout(() => {
           navigate("/");
         }, 2000);
       }
     }
   };
-  const displayToast = (variant, heading, body) => {
-    if (variant === "danger") {
-      setToastComponents((prevState) => {
-        return [
-          ...prevState,
-          {
-            variant,
-            heading,
-            body,
-          },
-        ];
-      });
-    } else {
-      setToastComponents([
-        {
-          variant,
-          heading,
-          body,
-        },
-      ]);
-    }
-  };
+
   const filter = async (obj) => {
     const params = {};
     for (let key in obj) {
@@ -103,19 +74,14 @@ const View = () => {
       if (response.data.status === "Success") {
         setIsFetchingAnnouncement(false);
         console.log("Announcements fetched successfully!!");
-        displayToast(
-          "success",
-          "Success",
-          "Announcements fetched successfully."
-        );
+
         setAnnouncementList(response.data.announcementList);
       }
     } catch (error) {
       setIsFetchingAnnouncement(false);
       console.log("Announcements fetch failed!!", error);
-      displayToast("danger", "Error", "Announcements fetch failed.");
+
       if (error.response.data.type === "TokenExpiredError") {
-        displayToast("danger", "Error", "Session expired. Please login again.");
         setTimeout(() => {
           navigate("/");
         }, 2000);
@@ -138,36 +104,21 @@ const View = () => {
       if (response.data.status === "Success") {
         console.log("Announcement deleted successfully!!");
         try {
-          if(announcementObj.images && announcementObj.images.length) {
-            for(let file of announcementObj.images) {
+          if (announcementObj.images && announcementObj.images.length) {
+            for (let file of announcementObj.images) {
               const deleteAnnouncement = storage.ref(
                 `images/announcement/${file.name}`
               );
               await deleteAnnouncement.delete();
             }
           }
-          displayToast(
-            "success",
-            "Success",
-            "Announcement deleted successfully."
-          );
+
           getAnnouncements();
         } catch (err) {
-          console.log(
-            "Failed to delete image. Please contact admin!!"
-          );
-          displayToast(
-            "danger",
-            "Error",
-            "Failed to delete image. Please contact admin."
-          );
+          console.log("Failed to delete image. Please contact admin!!");
+
           getAnnouncements();
           if (err.response.data.type === "TokenExpiredError") {
-            displayToast(
-              "danger",
-              "Error",
-              "Session expired. Please login again."
-            );
             setTimeout(() => {
               navigate("/");
             }, 2000);
@@ -176,10 +127,9 @@ const View = () => {
       }
     } catch (error) {
       console.log("Announcement deletion failed!!", error);
-      displayToast("danger", "Error", "Announcement deletion failed.");
+
       getAnnouncements();
       if (error.response.data.type === "TokenExpiredError") {
-        displayToast("danger", "Error", "Session expired. Please login again.");
         setTimeout(() => {
           navigate("/");
         }, 2000);
@@ -206,20 +156,6 @@ const View = () => {
               );
             })}
           </Accordion>
-          <ToastContainer
-            className="p-3 toast-stack-vertical"
-            position="top-center"
-          >
-            {toastComponents.map((toastComponent, idx) => (
-              <Toast
-                key={idx}
-                closeToast={() => setToastComponents([])}
-                variant={toastComponent.variant}
-                toastHeading={toastComponent.heading}
-                toastBody={toastComponent.body}
-              />
-            ))}
-          </ToastContainer>
         </>
       )}
     </>

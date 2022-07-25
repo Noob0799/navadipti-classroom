@@ -1,11 +1,9 @@
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import Spinner from "react-bootstrap/Spinner";
-import ToastContainer from "react-bootstrap/ToastContainer";
 import Axios from "axios";
 import jwt_decode from "jwt-decode";
 import ImageViewerModal from "../../../components/imageViewerModal/ImageViewerModal";
-import Toast from "../../../components/toast/Toast";
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { storage } from "../../../firebase/index";
@@ -17,7 +15,6 @@ const Create = ({ viewAnnouncement }) => {
   const [time, setTime] = useState("");
   const [selectedImageFiles, setSelectedImageFiles] = useState([]);
   const [imageFiles, setImageFiles] = useState([]);
-  const [toastComponents, setToastComponents] = useState([]);
   const [isCreatingAnnouncement, setIsCreatingAnnouncement] = useState(false);
   const navigate = useNavigate();
   const studentClass = useRef("All");
@@ -65,7 +62,6 @@ const Create = ({ viewAnnouncement }) => {
             (snapshot) => {},
             (error) => {
               console.log("Firebase image upload error!!", error);
-              displayToast("danger", "Error", "Firebase image upload error.");
             },
             async () => {
               url = await storage
@@ -91,11 +87,6 @@ const Create = ({ viewAnnouncement }) => {
                   );
                   if (response.data.status === "Success") {
                     console.log("Announcement created successfully!!");
-                    displayToast(
-                      "success",
-                      "Success",
-                      "Announcement created successfully."
-                    );
                     setTimeout(() => {
                       setIsCreatingAnnouncement(false);
                       viewAnnouncement();
@@ -104,22 +95,12 @@ const Create = ({ viewAnnouncement }) => {
                 } catch (error) {
                   setIsCreatingAnnouncement(false);
                   console.log("Announcement creation failed!!", error);
-                  displayToast(
-                    "danger",
-                    "Error",
-                    "Announcement creation failed."
-                  );
                   try {
                     const deleteAnnouncement = storage.ref(
                       `images/announcement/${fileName}`
                     );
                     await deleteAnnouncement.delete();
                     if (error.response.data.type === "TokenExpiredError") {
-                      displayToast(
-                        "danger",
-                        "Error",
-                        "Session expired. Please login again."
-                      );
                       setTimeout(() => {
                         navigate("/");
                       }, 2000);
@@ -128,17 +109,7 @@ const Create = ({ viewAnnouncement }) => {
                     console.log(
                       "Failed to delete uploaded image. Please contact admin!!"
                     );
-                    displayToast(
-                      "danger",
-                      "Error",
-                      "Failed to delete uploaded image. Please contact admin."
-                    );
                     if (error.response.data.type === "TokenExpiredError") {
-                      displayToast(
-                        "danger",
-                        "Error",
-                        "Session expired. Please login again."
-                      );
                       setTimeout(() => {
                         navigate("/");
                       }, 2000);
@@ -162,11 +133,7 @@ const Create = ({ viewAnnouncement }) => {
           );
           if (response.data.status === "Success") {
             console.log("Announcement created successfully!!");
-            displayToast(
-              "success",
-              "Success",
-              "Announcement created successfully."
-            );
+
             setTimeout(() => {
               setIsCreatingAnnouncement(false);
               viewAnnouncement();
@@ -175,13 +142,8 @@ const Create = ({ viewAnnouncement }) => {
         } catch (error) {
           setIsCreatingAnnouncement(false);
           console.log("Announcement creation failed!!", error);
-          displayToast("danger", "Error", "Announcement creation failed.");
+
           if (error.response.data.type === "TokenExpiredError") {
-            displayToast(
-              "danger",
-              "Error",
-              "Session expired. Please login again."
-            );
             setTimeout(() => {
               navigate("/");
             }, 2000);
@@ -192,28 +154,7 @@ const Create = ({ viewAnnouncement }) => {
 
     setValidated(true);
   };
-  const displayToast = (variant, heading, body) => {
-    if (variant === "danger") {
-      setToastComponents((prevState) => {
-        return [
-          ...prevState,
-          {
-            variant,
-            heading,
-            body,
-          },
-        ];
-      });
-    } else {
-      setToastComponents([
-        {
-          variant,
-          heading,
-          body,
-        },
-      ]);
-    }
-  };
+
   const fileSelectedHandler = (e) => {
     const fileList = e.target.files,
       oFiles = [];
@@ -289,7 +230,11 @@ const Create = ({ viewAnnouncement }) => {
           <Form.Control as="textarea" rows={3} ref={instructions} required />
         </Form.Group>
         <div className="form-btn-container">
-          <Button type="submit" variant="success" disabled={isCreatingAnnouncement}>
+          <Button
+            type="submit"
+            variant="success"
+            disabled={isCreatingAnnouncement}
+          >
             {isCreatingAnnouncement ? (
               <>
                 <Spinner
@@ -325,20 +270,6 @@ const Create = ({ viewAnnouncement }) => {
         close={handleClose}
         files={imageFiles}
       />
-      <ToastContainer
-        className="p-3 toast-stack-vertical"
-        position="top-center"
-      >
-        {toastComponents.map((toastComponent, idx) => (
-          <Toast
-            key={idx}
-            closeToast={() => setToastComponents([])}
-            variant={toastComponent.variant}
-            toastHeading={toastComponent.heading}
-            toastBody={toastComponent.body}
-          />
-        ))}
-      </ToastContainer>
     </>
   );
 };

@@ -1,9 +1,7 @@
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import Spinner from "react-bootstrap/Spinner";
-import ToastContainer from "react-bootstrap/ToastContainer";
 import ImageViewerModal from "../../../components/imageViewerModal/ImageViewerModal";
-import Toast from "../../../components/toast/Toast";
 import Axios from "axios";
 import jwt_decode from "jwt-decode";
 import { useRef, useState, useEffect } from "react";
@@ -18,7 +16,7 @@ const Create = ({ viewTask }) => {
   const [dueDate, setDueDate] = useState("");
   const [selectedImageFiles, setSelectedImageFiles] = useState([]);
   const [imageFiles, setImageFiles] = useState([]);
-  const [toastComponents, setToastComponents] = useState([]);
+
   const [isCreatingTask, setIsCreatingTask] = useState(false);
   const subject = useRef("English");
   const term = useRef("CT1");
@@ -66,7 +64,6 @@ const Create = ({ viewTask }) => {
           (snapshot) => {},
           (error) => {
             console.log("Firebase image upload error!!", error);
-            displayToast("danger", "Error", "Firebase image upload error.");
           },
           async () => {
             url = await storage
@@ -92,11 +89,7 @@ const Create = ({ viewTask }) => {
                 );
                 if (response.data.status === "Success") {
                   console.log("Task created successfully!!");
-                  displayToast(
-                    "success",
-                    "Success",
-                    "Task created successfully."
-                  );
+
                   setTimeout(() => {
                     setIsCreatingTask(false);
                     viewTask();
@@ -105,16 +98,11 @@ const Create = ({ viewTask }) => {
               } catch (error) {
                 setIsCreatingTask(false);
                 console.log("Task creation failed!!", error);
-                displayToast("danger", "Error", "Task creation failed.");
+
                 try {
                   const deleteTask = storage.ref(`images/task/${fileName}`);
                   await deleteTask.delete();
                   if (error.response.data.type === "TokenExpiredError") {
-                    displayToast(
-                      "danger",
-                      "Error",
-                      "Session expired. Please login again."
-                    );
                     setTimeout(() => {
                       navigate("/");
                     }, 2000);
@@ -123,17 +111,8 @@ const Create = ({ viewTask }) => {
                   console.log(
                     "Failed to delete uploaded image. Please contact admin!!"
                   );
-                  displayToast(
-                    "danger",
-                    "Error",
-                    "Failed to delete uploaded image. Please contact admin."
-                  );
+
                   if (error.response.data.type === "TokenExpiredError") {
-                    displayToast(
-                      "danger",
-                      "Error",
-                      "Session expired. Please login again."
-                    );
                     setTimeout(() => {
                       navigate("/");
                     }, 2000);
@@ -148,28 +127,7 @@ const Create = ({ viewTask }) => {
 
     setValidated(true);
   };
-  const displayToast = (variant, heading, body) => {
-    if (variant === "danger") {
-      setToastComponents((prevState) => {
-        return [
-          ...prevState,
-          {
-            variant,
-            heading,
-            body,
-          },
-        ];
-      });
-    } else {
-      setToastComponents([
-        {
-          variant,
-          heading,
-          body,
-        },
-      ]);
-    }
-  };
+
   const handleStudentClass = (e) => {
     setStudentClass(e.target.value);
   };
@@ -296,7 +254,7 @@ const Create = ({ viewTask }) => {
         </Form.Group>
         <div className="form-btn-container">
           <Button type="submit" variant="success" disabled={isCreatingTask}>
-          {isCreatingTask ? (
+            {isCreatingTask ? (
               <>
                 <Spinner
                   as="span"
@@ -331,20 +289,6 @@ const Create = ({ viewTask }) => {
         close={handleClose}
         files={imageFiles}
       />
-      <ToastContainer
-        className="p-3 toast-stack-vertical"
-        position="top-center"
-      >
-        {toastComponents.map((toastComponent, idx) => (
-          <Toast
-            key={idx}
-            closeToast={() => setToastComponents([])}
-            variant={toastComponent.variant}
-            toastHeading={toastComponent.heading}
-            toastBody={toastComponent.body}
-          />
-        ))}
-      </ToastContainer>
     </>
   );
 };
