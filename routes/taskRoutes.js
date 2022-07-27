@@ -109,10 +109,10 @@ router.get("/getTasks", async (req, res) => {
             taskData = [];
           if (filterString) {
             taskList = await pool.query(
-              `SELECT * FROM task WHERE ${filterString}`
+              `SELECT task_id, class, task_type, subject, term, due_date::varchar, instructions FROM task WHERE ${filterString}`
             );
           } else {
-            taskList = await pool.query(`SELECT * FROM task`);
+            taskList = await pool.query(`SELECT task_id, class, task_type, subject, term, due_date::varchar, instructions FROM task`);
           }
           taskData = [...taskList.rows];
           taskList = [];
