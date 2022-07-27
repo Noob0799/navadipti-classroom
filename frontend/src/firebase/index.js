@@ -2,7 +2,7 @@ import firebase from "firebase/compat/app";
 import "firebase/compat/storage";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyALSx3zFQm19KdH2OsvHIp_UeC67R-Wd-Y",
+  apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
   authDomain: "navadipti-classroom.firebaseapp.com",
   projectId: "navadipti-classroom",
   storageBucket: "navadipti-classroom.appspot.com",
