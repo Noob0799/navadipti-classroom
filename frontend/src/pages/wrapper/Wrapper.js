@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft, faPowerOff } from "@fortawesome/free-solid-svg-icons";
 import jwt_decode from "jwt-decode";
+import img from "../../images/classroom-bg1.jpg";
 
 const Wrapper = ({ ChildComponent }) => {
   const [tab, setTab] = useState("Create");
@@ -21,8 +22,15 @@ const Wrapper = ({ ChildComponent }) => {
     setTab("View");
   };
 
+  const backgroundStyle = {
+    backgroundImage: `url(${img})`,
+    backgroundPosition: "center",
+    backgroundRepeat: "no-repeat",
+    backgroundSize: "cover"
+  };
+
   return (
-    <div className="wrapper-container main-wrapper">
+    <div className="wrapper-container main-wrapper" style={backgroundStyle}>
       <div className="side-content"></div>
       <div className="main-content">
         <Navbar bg="dark" className="wrapper-navbar">

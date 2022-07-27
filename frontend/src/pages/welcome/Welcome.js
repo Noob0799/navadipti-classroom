@@ -1,4 +1,5 @@
 import AuthModal from "../../components/authModal/AuthModal";
+import img from "../../images/pencil-bg.jfif";
 import { useEffect, useState } from 'react';
 
 const Welcome = () => {
@@ -14,9 +15,16 @@ const Welcome = () => {
   };
   const handleClose = () => setShowModal(false);
 
+  const backgroundStyle = {
+    backgroundImage: `url(${img})`,
+    backgroundPosition: "center",
+    backgroundRepeat: "no-repeat",
+    backgroundSize: "cover"
+  };
+
   return (
     <>
-      <div className="welcome-container">
+      <div className="welcome-container" style={backgroundStyle}>
         <section className="school-details">
           <h1>Nava Dipti School</h1>
           <h4>Sithala, Kathpole, Sonarpur</h4>
