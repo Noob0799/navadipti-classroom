@@ -77,7 +77,7 @@ const Create = ({ viewSyllabus }) => {
             if (selectedImageFiles.length === params.images.length) {
               try {
                 response = await Axios.post(
-                  "http://localhost:5000/syllabus/createSyllabus",
+                  `${process.env.REACT_APP_BASE_URL}/syllabus/createSyllabus`,
                   params,
                   {
                     headers: {

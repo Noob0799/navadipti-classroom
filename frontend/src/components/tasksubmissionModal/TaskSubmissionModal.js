@@ -54,7 +54,7 @@ const TaskSubmissionModal = ({ show, close, id }) => {
             if (selectedImageFiles.length === params.images.length) {
               try {
                 response = await Axios.post(
-                  "http://localhost:5000/task/submitTask",
+                  `${process.env.REACT_APP_BASE_URL}/task/submitTask`,
                   params,
                   {
                     headers: {

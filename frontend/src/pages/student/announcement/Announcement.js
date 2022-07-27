@@ -28,7 +28,7 @@ const Announcement = () => {
   const getAnnouncements = async () => {
     try {
       const response = await Axios.get(
-        "http://localhost:5000/announcement/getAnnouncements",
+        `${process.env.REACT_APP_BASE_URL}/announcement/getAnnouncements`,
         {
           headers: {
             Authorization: `Bearer ${sessionStorage.getItem("token")}`,
@@ -64,7 +64,7 @@ const Announcement = () => {
     setIsFetchingAnnouncement(true);
     try {
       const response = await Axios.get(
-        "http://localhost:5000/announcement/getAnnouncements",
+        `${process.env.REACT_APP_BASE_URL}/announcement/getAnnouncements`,
         {
           headers: {
             Authorization: `Bearer ${sessionStorage.getItem("token")}`,

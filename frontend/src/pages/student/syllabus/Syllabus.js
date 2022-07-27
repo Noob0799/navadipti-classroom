@@ -28,7 +28,7 @@ const Syllabus = () => {
   const getSyllabus = async () => {
     try {
       const response = await Axios.get(
-        "http://localhost:5000/syllabus/getSyllabus",
+        `${process.env.REACT_APP_BASE_URL}/syllabus/getSyllabus`,
         {
           headers: {
             Authorization: `Bearer ${sessionStorage.getItem("token")}`,
@@ -64,7 +64,7 @@ const Syllabus = () => {
     setIsFetchingSyllabus(true);
     try {
       const response = await Axios.get(
-        "http://localhost:5000/syllabus/getSyllabus",
+        `${process.env.REACT_APP_BASE_URL}/syllabus/getSyllabus`,
         {
           headers: {
             Authorization: `Bearer ${sessionStorage.getItem("token")}`,
