@@ -1,5 +1,7 @@
 CREATE DATABASE navadipticlassroom;
 
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+
 CREATE TABLE student(
     student_id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
     student_name VARCHAR(255) NOT NULL,
