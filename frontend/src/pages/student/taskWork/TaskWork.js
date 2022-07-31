@@ -29,7 +29,7 @@ const TaskWork = () => {
   }, []);
   const getTasks = async () => {
     try {
-      const response = await Axios.get(`${process.env.REACT_APP_BASE_URL}/task/getTasks`, {
+      const response = await Axios.get(`/task/getTasks`, {
         headers: {
           Authorization: `Bearer ${sessionStorage.getItem("token")}`,
         },
@@ -62,7 +62,7 @@ const TaskWork = () => {
     }
     setIsFetchingTask(true);
     try {
-      const response = await Axios.get(`${process.env.REACT_APP_BASE_URL}/task/getTasks`, {
+      const response = await Axios.get(`/task/getTasks`, {
         headers: {
           Authorization: `Bearer ${sessionStorage.getItem("token")}`,
         },

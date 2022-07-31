@@ -29,7 +29,7 @@ const View = () => {
   const getSyllabus = async () => {
     try {
       const response = await Axios.get(
-        `${process.env.REACT_APP_BASE_URL}/syllabus/getSyllabus`,
+        `/syllabus/getSyllabus`,
         {
           headers: {
             Authorization: `Bearer ${sessionStorage.getItem("token")}`,
@@ -65,7 +65,7 @@ const View = () => {
     setIsFetchingSyllabus(true);
     try {
       const response = await Axios.get(
-        `${process.env.REACT_APP_BASE_URL}/syllabus/getSyllabus`,
+        `/syllabus/getSyllabus`,
         {
           headers: {
             Authorization: `Bearer ${sessionStorage.getItem("token")}`,
@@ -94,7 +94,7 @@ const View = () => {
   const handleDelete = async (syllabusObj) => {
     try {
       const response = await Axios.delete(
-        `${process.env.REACT_APP_BASE_URL}/syllabus/deleteSyllabus`,
+        `/syllabus/deleteSyllabus`,
         {
           params: {
             syllabusId: syllabusObj.id,

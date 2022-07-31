@@ -30,7 +30,7 @@ const View = () => {
   }, []);
   const getTasks = async () => {
     try {
-      const response = await Axios.get(`${process.env.REACT_APP_BASE_URL}/task/getTasks`, {
+      const response = await Axios.get(`/task/getTasks`, {
         headers: {
           Authorization: `Bearer ${sessionStorage.getItem("token")}`,
         },
@@ -63,7 +63,7 @@ const View = () => {
     }
     setIsFetchingTask(true);
     try {
-      const response = await Axios.get(`${process.env.REACT_APP_BASE_URL}/task/getTasks`, {
+      const response = await Axios.get(`/task/getTasks`, {
         headers: {
           Authorization: `Bearer ${sessionStorage.getItem("token")}`,
         },
@@ -90,7 +90,7 @@ const View = () => {
   const handleDelete = async (taskObj) => {
     try {
       const response = await Axios.delete(
-        `${process.env.REACT_APP_BASE_URL}/task/deleteTask`,
+        `/task/deleteTask`,
         {
           params: {
             taskId: taskObj.id,

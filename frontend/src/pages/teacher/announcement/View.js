@@ -29,7 +29,7 @@ const View = () => {
   const getAnnouncements = async () => {
     try {
       const response = await Axios.get(
-        `${process.env.REACT_APP_BASE_URL}/announcement/getAnnouncements`,
+        `/announcement/getAnnouncements`,
         {
           headers: {
             Authorization: `Bearer ${sessionStorage.getItem("token")}`,
@@ -65,7 +65,7 @@ const View = () => {
     setIsFetchingAnnouncement(true);
     try {
       const response = await Axios.get(
-        `${process.env.REACT_APP_BASE_URL}/announcement/getAnnouncements`,
+        `/announcement/getAnnouncements`,
         {
           headers: {
             Authorization: `Bearer ${sessionStorage.getItem("token")}`,
@@ -94,7 +94,7 @@ const View = () => {
   const handleDelete = async (announcementObj) => {
     try {
       const response = await Axios.delete(
-        `${process.env.REACT_APP_BASE_URL}/announcement/deleteAnnouncement`,
+        `/announcement/deleteAnnouncement`,
         {
           params: {
             announcementId: announcementObj.id,

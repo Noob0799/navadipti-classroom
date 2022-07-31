@@ -77,7 +77,7 @@ const Create = ({ viewAnnouncement }) => {
               if (selectedImageFiles.length === params.images.length) {
                 try {
                   response = await Axios.post(
-                    `${process.env.REACT_APP_BASE_URL}/announcement/createAnnouncement`,
+                    `/announcement/createAnnouncement`,
                     params,
                     {
                       headers: {
@@ -130,7 +130,7 @@ const Create = ({ viewAnnouncement }) => {
       } else {
         try {
           response = await Axios.post(
-            `${process.env.REACT_APP_BASE_URL}/announcement/createAnnouncement`,
+            `/announcement/createAnnouncement`,
             params,
             {
               headers: {

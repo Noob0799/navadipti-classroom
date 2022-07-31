@@ -33,7 +33,7 @@ const AuthModal = ({ role, show, close }) => {
           password: password.current.value,
         };
         const response = await Axios.post(
-          `${process.env.REACT_APP_BASE_URL}/auth/validate`,
+          `/auth/validate`,
           params
         );
         const { status, message, token } = response.data;

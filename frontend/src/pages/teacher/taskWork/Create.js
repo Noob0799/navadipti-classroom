@@ -78,7 +78,7 @@ const Create = ({ viewTask }) => {
             if (selectedImageFiles.length === params.images.length) {
               try {
                 response = await Axios.post(
-                  `${process.env.REACT_APP_BASE_URL}/task/createTask`,
+                  `/task/createTask`,
                   params,
                   {
                     headers: {
