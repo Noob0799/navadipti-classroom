@@ -6,7 +6,6 @@ CREATE TABLE student(
     student_id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
     student_name VARCHAR(255) NOT NULL,
     student_class VARCHAR(255) NOT NULL,
-    student_roll SERIAL NOT NULL,
     student_phone BIGINT NOT NULL UNIQUE,
     student_password VARCHAR(255) NOT NULL
 );
@@ -58,7 +57,8 @@ CREATE TABLE taskimages(
 CREATE TABLE completedtaskimages(
     task_image_id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
     task_id uuid NOT NULL references task(task_id) ON DELETE CASCADE,
-    image_id uuid NOT NULL references images(image_id) ON DELETE CASCADE
+    image_id uuid NOT NULL references images(image_id) ON DELETE CASCADE,
+    student_id uuid NOT NULL references student(student_id) ON DELETE CASCADE
 );
 
 CREATE TABLE announcement(

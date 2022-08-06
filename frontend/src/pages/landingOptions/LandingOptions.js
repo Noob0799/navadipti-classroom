@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 
 const LandingOptions = () => {
   const [role, setRole] = useState("teacher");
+  const [isPrincipal, setIsPrincipal] = useState(false);
   const navigate = useNavigate();
   useEffect(() => {
     const token = sessionStorage.getItem("token");
@@ -15,6 +16,7 @@ const LandingOptions = () => {
       if (!role) {
         navigate("/");
       } else {
+        setIsPrincipal(role === "principal" ? true : false);
         setRole(
           role === "teacher" || role === "principal" ? "teacher" : "student"
         );
@@ -48,6 +50,15 @@ const LandingOptions = () => {
       >
         Announcement
       </Button>
+      {isPrincipal && (
+        <Button
+          variant="light"
+          className="classroom-options"
+          onClick={() => handleRouting("register")}
+        >
+          Register
+        </Button>
+      )}
       <Button
         variant="light"
         className="classroom-options"

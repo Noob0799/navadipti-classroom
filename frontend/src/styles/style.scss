@@ -168,6 +168,17 @@
           display: flex;
           word-wrap: break-word;
           padding: 0 5px;
+          .list-item-label {
+            font-size: 16px;
+          }
+          .list-item-value {
+            font-weight: 600;
+            font-size: 18px;
+            margin-left: 5px;
+            &.red-alert {
+              color: red;
+            }
+          }
           .list-item-body-btn {
             border: 2px solid black;
             font-weight: bold;
@@ -177,6 +188,12 @@
         @media screen and (max-width: 523px) {
           div {
             flex-direction: column;
+            .list-item-label {
+              font-size: 14px;
+            }
+            .list-item-value {
+              font-size: 16px;
+            }
             .list-item-body-btn {
               font-size: 10px;
             }

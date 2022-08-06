@@ -31,110 +31,160 @@ const AccordionItem = (props) => {
   };
   return (
     <>
-      <Accordion.Item eventKey={props.id} className="list-item">
-        <Accordion.Header>
-          <div className="list-item-header">
-            {props.class && (
-              <div>
-                <span className="list-item-label">Class:</span>{" "}
-                <span className="list-item-value">{props.class}</span>
-              </div>
-            )}
-            {props.date && (
-              <div>
-                <span className="list-item-label">Date:</span>{" "}
-                <span className="list-item-value red-alert">
-                  {props.date.split("T")[0]}
-                </span>
-              </div>
-            )}
-            {props.time && (
-              <div>
-                <span className="list-item-label">Time:</span>{" "}
-                <span className="list-item-value red-alert">
-                  {props.time.split(":")[0]}:{props.time.split(":")[1]}
-                </span>
-              </div>
-            )}
-            {props.dueDate && (
-              <div>
-                <span className="list-item-label">Due Date:</span>{" "}
-                <span className="list-item-value red-alert">
-                  {props.dueDate.split("T")[0]}
-                </span>
-              </div>
-            )}
-            {props.term && (
-              <div>
-                <span className="list-item-label">Term:</span>{" "}
-                <span className="list-item-value">{props.term}</span>
-              </div>
-            )}
-            {props.subject && (
-              <div>
-                <span className="list-item-label">Subject:</span>{" "}
-                <span className="list-item-value">{props.subject}</span>
-              </div>
-            )}
-            {props.taskType && (
-              <div>
-                <span className="list-item-label">Task Type:</span>{" "}
-                <span className="list-item-value">{props.taskType}</span>
-              </div>
-            )}
-          </div>
-          {props.role !== "student" && (
-            <div className="list-item-delete">
-              <FontAwesomeIcon icon={faTrash} className="item-delete" onClick={handleDelete}/>
+      {props.mode === "user" ? (
+        <Accordion.Item eventKey={props.id} className="list-item">
+          <Accordion.Header>
+            <div className="list-item-header">
+              {props.identity && (
+                <div>
+                  <span className="list-item-label">Identity:</span>{" "}
+                  <span className="list-item-value">{props.identity}</span>
+                </div>
+              )}
+              {props.name && (
+                <div>
+                  <span className="list-item-label">Name:</span>{" "}
+                  <span className="list-item-value">{props.name}</span>
+                </div>
+              )}
             </div>
-          )}
-        </Accordion.Header>
-        <Accordion.Body>
-          <div className="list-item-body">
-            <div>{props.instructions}</div>
-            <div>
-              {props.role === "student" &&
-              !(props.submittedImages && props.submittedImages.length) ? (
-                <Button
-                  variant="success"
-                  className="list-item-body-btn"
-                  onClick={handleSubmissionShow}
-                >
-                  Submit
-                </Button>
-              ) : null}
-              {props.submittedImages && props.submittedImages.length ? (
-                <Button
-                  variant="warning"
-                  className="list-item-body-btn"
-                  onClick={() => handleShow("submitted")}
-                >
-                  Submitted
-                </Button>
-              ) : null}
-              {props.images && props.images.length ? (
-                <Button
-                  variant="warning"
-                  className="list-item-body-btn"
-                  onClick={() => handleShow("task")}
-                >
-                  Task
-                </Button>
-              ) : null}
+            {props.identity !== "principal" && (
+              <div className="list-item-delete">
+                <FontAwesomeIcon
+                  icon={faTrash}
+                  className="item-delete"
+                  onClick={handleDelete}
+                />
+              </div>
+            )}
+          </Accordion.Header>
+          <Accordion.Body>
+            <div className="list-item-body">
+              {props.class && (
+                <div>
+                  <div className="list-item-label">Class:</div>{" "}
+                  <div className="list-item-value">{props.class}</div>
+                </div>
+              )}
+              <div>
+                <div className="list-item-label">Phone:</div>{" "}
+                <div className="list-item-value">{props.phone}</div>
+              </div>
             </div>
-          </div>
-        </Accordion.Body>
-      </Accordion.Item>
-      <ImageViewerModal
-        show={showModal}
-        close={handleClose}
-        files={option === "task" ? props.images : props.submittedImages}
-      />
-      <TaskSubmissionModal
-        show={showSubmissionModal}
-        close={handleSubmissionClose}
-        id={props.id}
-      />
+          </Accordion.Body>
+        </Accordion.Item>
+      ) : (
+        <>
+          <Accordion.Item eventKey={props.id} className="list-item">
+            <Accordion.Header>
+              <div className="list-item-header">
+                {props.class && (
+                  <div>
+                    <span className="list-item-label">Class:</span>{" "}
+                    <span className="list-item-value">{props.class}</span>
+                  </div>
+                )}
+                {props.date && (
+                  <div>
+                    <span className="list-item-label">Date:</span>{" "}
+                    <span className="list-item-value red-alert">
+                      {props.date.split("T")[0]}
+                    </span>
+                  </div>
+                )}
+                {props.time && (
+                  <div>
+                    <span className="list-item-label">Time:</span>{" "}
+                    <span className="list-item-value red-alert">
+                      {props.time.split(":")[0]}:{props.time.split(":")[1]}
+                    </span>
+                  </div>
+                )}
+                {props.dueDate && (
+                  <div>
+                    <span className="list-item-label">Due Date:</span>{" "}
+                    <span className="list-item-value red-alert">
+                      {props.dueDate.split("T")[0]}
+                    </span>
+                  </div>
+                )}
+                {props.term && (
+                  <div>
+                    <span className="list-item-label">Term:</span>{" "}
+                    <span className="list-item-value">{props.term}</span>
+                  </div>
+                )}
+                {props.subject && (
+                  <div>
+                    <span className="list-item-label">Subject:</span>{" "}
+                    <span className="list-item-value">{props.subject}</span>
+                  </div>
+                )}
+                {props.taskType && (
+                  <div>
+                    <span className="list-item-label">Task Type:</span>{" "}
+                    <span className="list-item-value">{props.taskType}</span>
+                  </div>
+                )}
+              </div>
+              {props.role !== "student" && (
+                <div className="list-item-delete">
+                  <FontAwesomeIcon
+                    icon={faTrash}
+                    className="item-delete"
+                    onClick={handleDelete}
+                  />
+                </div>
+              )}
+            </Accordion.Header>
+            <Accordion.Body>
+              <div className="list-item-body">
+                <div>{props.instructions}</div>
+                <div>
+                  {props.role === "student" &&
+                  !(props.submittedImages && props.submittedImages.length) ? (
+                    <Button
+                      variant="success"
+                      className="list-item-body-btn"
+                      onClick={handleSubmissionShow}
+                    >
+                      Submit
+                    </Button>
+                  ) : null}
+                  {props.submittedImages && props.submittedImages.length ? (
+                    <Button
+                      variant="warning"
+                      className="list-item-body-btn"
+                      onClick={() => handleShow("submitted")}
+                    >
+                      Submitted
+                    </Button>
+                  ) : null}
+                  {props.images && props.images.length ? (
+                    <Button
+                      variant="warning"
+                      className="list-item-body-btn"
+                      onClick={() => handleShow("task")}
+                    >
+                      Task
+                    </Button>
+                  ) : null}
+                </div>
+              </div>
+            </Accordion.Body>
+          </Accordion.Item>
+          <ImageViewerModal
+            show={showModal}
+            close={handleClose}
+            files={option === "task" ? props.images : props.submittedImages}
+          />
+          <TaskSubmissionModal
+            show={showSubmissionModal}
+            close={handleSubmissionClose}
+            id={props.id}
+          />
+        </>
+      )}
       <ConfirmDeletionModal
         show={showDeletionModal}
         close={handleDeletionClose}

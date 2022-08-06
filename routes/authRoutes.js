@@ -3,20 +3,23 @@ const router = express.Router();
 const pool = require("../db");
 const bcrypt = require("bcrypt");
 const jwtgenerator = require("../utils/jwtgenerator");
+const jwt = require("jsonwebtoken");
+require("dotenv").config();
 
 router.post("/validate", async (req, res) => {
   try {
-    await pool.query('BEGIN');
+    await pool.query("BEGIN");
     const { role, phoneNumber, password } = req.body;
     const user = await pool.query(
       `SELECT * FROM ${role} where ${role}_phone = $1`,
       [phoneNumber]
     );
     if (!user.rows.length) {
-      await pool.query('ROLLBACK');
-      res
-        .status(401)
-        .json({ status: "Failure", message: "User phone number or password incorrect!!" });
+      await pool.query("ROLLBACK");
+      res.status(401).json({
+        status: "Failure",
+        message: "User phone number or password incorrect!!",
+      });
     } else {
       const match = await bcrypt.compare(
         password,
@@ -32,62 +35,239 @@ router.post("/validate", async (req, res) => {
         } else {
           payload = { id: user.rows[0].student_id, role: "student" };
         }
-        await pool.query('COMMIT');
+        await pool.query("COMMIT");
         res.status(201).json({
           status: "Success",
           message: "Validated successfully!!",
           token: jwtgenerator(payload),
         });
       } else {
-        await pool.query('ROLLBACK');
-        res
-          .status(401)
-          .json({ status: "Failure", message: "User phone number or password incorrect!!" });
+        await pool.query("ROLLBACK");
+        res.status(401).json({
+          status: "Failure",
+          message: "User phone number or password incorrect!!",
+        });
       }
     }
   } catch (error) {
-    await pool.query('ROLLBACK');
-    res.status(500).json({ status: "Error", message: "Server error!!", error: err });
+    await pool.query("ROLLBACK");
+    res.status(500).json({ status: "Error", message: "Server error!!", error });
   }
 });
 
 router.post("/register", async (req, res) => {
   try {
-    const { role, name, studentClass, phoneNumber, password } = req.body;
-    await pool.query('BEGIN');
-    const user = await pool.query(
-      `SELECT * FROM ${role} where ${role}_phone = $1`,
-      [phoneNumber]
-    );
-    if (user.rows.length) {
-      await pool.query('ROLLBACK');
-      res.status(401).json({
-        status: "Failure",
-        message: "User with provided phone number exists!!",
-      });
-    } else {
-      const saltRounds = 10;
-      const genSalt = await bcrypt.genSalt(saltRounds);
-      const hash = await bcrypt.hash(password, genSalt);
-      if (role === "teacher") {
-        await pool.query(
-          "INSERT INTO teacher (teacher_role, teacher_name, teacher_phone, teacher_password) VALUES ($1, $2, $3, $4)",
-          [role, name, phoneNumber, hash]
+    const { identity, name, studentClass, phoneNumber, password } = req.body;
+    const { authorization } = req.headers;
+    const token = authorization.split(" ")[1];
+    await pool.query("BEGIN");
+    try {
+      const { role } = jwt.verify(token, process.env.SECRET_KEY);
+      if (role === "principal") {
+        const user = await pool.query(
+          `SELECT * FROM ${identity} where ${identity}_phone = $1`,
+          [phoneNumber]
         );
+        if (user.rows.length) {
+          await pool.query("ROLLBACK");
+          res.status(401).json({
+            status: "Failure",
+            message: "User with provided phone number exists!!",
+          });
+        } else {
+          const saltRounds = 10;
+          const genSalt = await bcrypt.genSalt(saltRounds);
+          const hash = await bcrypt.hash(password, genSalt);
+          if (identity === "teacher") {
+            await pool.query(
+              "INSERT INTO teacher (teacher_role, teacher_name, teacher_phone, teacher_password) VALUES ($1, $2, $3, $4)",
+              [identity, name, phoneNumber, hash]
+            );
+          } else {
+            await pool.query(
+              "INSERT INTO student (student_name, student_class, student_phone, student_password) VALUES ($1, $2, $3, $4)",
+              [name, studentClass, phoneNumber, hash]
+            );
+          }
+          await pool.query("COMMIT");
+          res
+            .status(201)
+            .json({ status: "Success", message: "User added successfully!!" });
+        }
       } else {
-        await pool.query(
-          "INSERT INTO student (student_name, student_class, student_phone, student_password) VALUES ($1, $2, $3, $4)",
-          [name, studentClass, phoneNumber, hash]
-        );
+        await pool.query("ROLLBACK");
+        res
+          .status(403)
+          .json({ status: "Failure", message: "User not authorized!!" });
       }
-      await pool.query('COMMIT');
-      res
-        .status(201)
-        .json({ status: "Success", message: "User added successfully!!" });
+    } catch (err) {
+      await pool.query("ROLLBACK");
+      if (err.name === "TokenExpiredError") {
+        res.status(403).json({
+          status: "Failure",
+          type: err.name,
+          message: "Authorization token expired!!",
+          error: err,
+        });
+      } else {
+        res.status(403).json({
+          status: "Failure",
+          message: "Authorization failed!!",
+          error: err,
+        });
+      }
     }
   } catch (error) {
-    await pool.query('ROLLBACK');
-    res.status(500).json({ status: "Error", message: "Server error!!", error: err });
+    await pool.query("ROLLBACK");
+    res.status(500).json({ status: "Error", message: "Server error!!", error });
+  }
+});
+
+router.get("/getUsers", async (req, res) => {
+  try {
+    const { authorization } = req.headers;
+    const { identity, studentClass } = req.query;
+    const token = authorization.split(" ")[1];
+    await pool.query("BEGIN");
+    try {
+      const { role } = jwt.verify(token, process.env.SECRET_KEY);
+      if (role === "principal") {
+        try {
+          let teacherList = [],
+            studentList = [],
+            userList = [],
+            userData = [];
+          if (identity === "student") {
+            if (studentClass) {
+              studentList = await pool.query(
+                `SELECT * FROM student WHERE student_class = '${studentClass}'`
+              );
+            } else {
+              studentList = await pool.query("SELECT * FROM student");
+            }
+          } else if (identity === "teacher") {
+            teacherList = await pool.query("SELECT * FROM teacher");
+          } else {
+            teacherList = await pool.query("SELECT * FROM teacher");
+            studentList = await pool.query("SELECT * FROM student");
+          }
+          userData = userData.concat(
+            teacherList.rows ? teacherList.rows : [],
+            studentList.rows ? studentList.rows : []
+          );
+          for (let user of userData) {
+            if (user.teacher_id) {
+              userList.push({
+                id: user.teacher_id,
+                identity: user.teacher_role,
+                name: user.teacher_name,
+                phone: user.teacher_phone,
+              });
+            } else {
+              userList.push({
+                id: user.student_id,
+                identity: "student",
+                name: user.student_name,
+                class: user.student_class,
+                phone: user.student_phone,
+              });
+            }
+          }
+          await pool.query("COMMIT");
+          res.status(201).json({
+            status: "Success",
+            message: "Users fetched successfully!!",
+            userList,
+          });
+        } catch (err) {
+          await pool.query("ROLLBACK");
+          res
+            .status(500)
+            .json({ status: "Error", message: "Server error!!", error: err });
+        }
+      } else {
+        await pool.query("ROLLBACK");
+        res
+          .status(403)
+          .json({ status: "Failure", message: "User not authorized!!" });
+      }
+    } catch (err) {
+      await pool.query("ROLLBACK");
+      if (err.name === "TokenExpiredError") {
+        res.status(403).json({
+          status: "Failure",
+          type: err.name,
+          message: "Authorization token expired!!",
+          error: err,
+        });
+      } else {
+        res.status(403).json({
+          status: "Failure",
+          message: "Authorization failed!!",
+          error: err,
+        });
+      }
+    }
+  } catch (err) {
+    await pool.query("ROLLBACK");
+    res
+      .status(500)
+      .json({ status: "Error", message: "Server error!!", error: err });
+  }
+});
+
+router.delete("/deleteUser", async (req, res) => {
+  try {
+    const { userId, identity } = req.query;
+    const { authorization } = req.headers;
+    const token = authorization.split(" ")[1];
+    await pool.query("BEGIN");
+    try {
+      const { role } = jwt.verify(token, process.env.SECRET_KEY);
+      if (role === "principal") {
+        try {
+          await pool.query(
+            `DELETE FROM ${identity} WHERE ${identity}_id = '${userId}'`
+          );
+          await pool.query("COMMIT");
+          res.status(201).json({
+            status: "Success",
+            message: "User deleted successfully!!",
+          });
+        } catch (err) {
+          await pool.query("ROLLBACK");
+          res
+            .status(500)
+            .json({ status: "Error", message: "Server error!!", error: err });
+        }
+      } else {
+        await pool.query("ROLLBACK");
+        res
+          .status(403)
+          .json({ status: "Failure", message: "User not authorized!!" });
+      }
+    } catch (err) {
+      await pool.query("ROLLBACK");
+      if (err.name === "TokenExpiredError") {
+        res.status(403).json({
+          status: "Failure",
+          type: err.name,
+          message: "Authorization token expired!!",
+          error: err,
+        });
+      } else {
+        res.status(403).json({
+          status: "Failure",
+          message: "Authorization failed!!",
+          error: err,
+        });
+      }
+    }
+  } catch (err) {
+    await pool.query("ROLLBACK");
+    res
+      .status(500)
+      .json({ status: "Error", message: "Server error!!", error: err });
   }
 });
 

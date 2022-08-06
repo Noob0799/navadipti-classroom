@@ -8,6 +8,7 @@ import LandingOptions from "./pages/landingOptions/LandingOptions";
 import TeacherTaskWork from "./pages/teacher/taskWork/TaskWork";
 import TeacherSyllabus from "./pages/teacher/syllabus/Syllabus";
 import TeacherAnnouncement from "./pages/teacher/announcement/Announcement";
+import TeacherRegister from "./pages/teacher/register/Register";
 import StudentTaskWork from "./pages/student/taskWork/TaskWork";
 import StudentSyllabus from "./pages/student/syllabus/Syllabus";
 import StudentAnnouncement from "./pages/student/announcement/Announcement";
@@ -32,6 +33,10 @@ const App = () => {
         <Route
           path="/teacher/announcement"
           element={<Wrapper ChildComponent={TeacherAnnouncement} />}
+        />
+        <Route
+          path="/teacher/register"
+          element={<Wrapper ChildComponent={TeacherRegister} />}
         />
         <Route
           path="/student/taskWork"
