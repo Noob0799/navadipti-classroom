@@ -226,7 +226,7 @@ const Create = ({ viewAnnouncement }) => {
         </Form.Group>
         {imageFiles.length ? (
           <div className="form-btn-container">
-            <Button variant="warning" onClick={handleShow}>
+            <Button variant="warning" className="form-btn-container-btn" onClick={handleShow}>
               Preview
             </Button>
           </div>
@@ -241,6 +241,7 @@ const Create = ({ viewAnnouncement }) => {
           <Button
             type="submit"
             variant="success"
+            className={!isCreatingAnnouncement ? "form-btn-container-btn" : ""}
             disabled={isCreatingAnnouncement}
           >
             {isCreatingAnnouncement ? (

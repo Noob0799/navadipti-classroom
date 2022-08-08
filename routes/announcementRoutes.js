@@ -87,10 +87,10 @@ router.get("/getAnnouncements", async (req, res) => {
             announcementData = [];
           if (studentClass) {
             announcementList = await pool.query(
-              `SELECT * FROM announcement WHERE class = '${studentClass}'`
+              `SELECT announcement_id, class, announcement_date::varchar, announcement_time, instructions FROM announcement WHERE class = '${studentClass}'`
             );
           } else {
-            announcementList = await pool.query("SELECT announcement_id, class, announcement_date::varchar, announcement_time FROM announcement");
+            announcementList = await pool.query("SELECT announcement_id, class, announcement_date::varchar, announcement_time, instructions FROM announcement");
           }
           announcementData = [...announcementList.rows];
           announcementList = [];

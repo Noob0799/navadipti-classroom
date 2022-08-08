@@ -217,7 +217,7 @@ const Create = ({ viewSyllabus }) => {
         </Form.Group>
         {imageFiles.length ? (
           <div className="form-btn-container">
-            <Button variant="warning" onClick={handleShow}>
+            <Button variant="warning" className="form-btn-container-btn" onClick={handleShow}>
               Preview
             </Button>
           </div>
@@ -229,7 +229,7 @@ const Create = ({ viewSyllabus }) => {
           <Form.Control as="textarea" rows={3} ref={instructions} required />
         </Form.Group>
         <div className="form-btn-container">
-          <Button type="submit" variant="success" disabled={isCreatingSyllabus}>
+          <Button type="submit" className={!isCreatingSyllabus ? "form-btn-container-btn" : ""} variant="success" disabled={isCreatingSyllabus}>
             {isCreatingSyllabus ? (
               <>
                 <Spinner

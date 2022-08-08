@@ -157,7 +157,7 @@ const Create = ({ viewUsers }) => {
           />
         </Form.Group>
         <div className="form-btn-container">
-          <Button type="submit" variant="success" disabled={isRegistering}>
+          <Button type="submit" variant="success" className="form-btn-container-btn" disabled={isRegistering}>
             {isRegistering ? (
               <>
                 <Spinner
