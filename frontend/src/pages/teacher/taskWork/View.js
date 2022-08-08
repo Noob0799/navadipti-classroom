@@ -106,14 +106,14 @@ const View = () => {
         try {
           if (taskObj.images && taskObj.images.length) {
             for (let file of taskObj.images) {
-              const deleteTask = storage.ref(`images/task/${file.name}`);
+              const deleteTask = storage.ref(`images/${process.env.NODE_ENV === "production" ? "production/" : ""}task/${file.name}`);
               await deleteTask.delete();
             }
           }
           if (taskObj.submittedImages && taskObj.submittedImages.length) {
             for (let file of taskObj.submittedImages) {
               const deleteTask = storage.ref(
-                `images/completedTask/${file.name}`
+                `images/${process.env.NODE_ENV === "production" ? "production/" : ""}completedTask/${file.name}`
               );
               await deleteTask.delete();
             }

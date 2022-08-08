@@ -111,7 +111,7 @@ const View = () => {
           if (syllabusObj.images && syllabusObj.images.length) {
             for (let file of syllabusObj.images) {
               const deleteSyllabus = storage.ref(
-                `images/syllabus/${file.name}`
+                `images/${process.env.NODE_ENV === "production" ? "production/" : ""}syllabus/${file.name}`
               );
               await deleteSyllabus.delete();
             }

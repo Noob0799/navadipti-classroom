@@ -56,7 +56,7 @@ const Create = ({ viewSyllabus }) => {
           nameArr[1]
         }`;
         const uploadSyllabus = storage
-          .ref(`images/syllabus/${fileName}`)
+          .ref(`images/${process.env.NODE_ENV === "production" ? "production/" : ""}syllabus/${fileName}`)
           .put(file);
         uploadSyllabus.on(
           "state_changed",
@@ -67,7 +67,7 @@ const Create = ({ viewSyllabus }) => {
           },
           async () => {
             url = await storage
-              .ref("images/syllabus/")
+              .ref(`images/${process.env.NODE_ENV === "production" ? "production/" : ""}syllabus/`)
               .child(fileName)
               .getDownloadURL();
             params.images.push({
@@ -101,7 +101,7 @@ const Create = ({ viewSyllabus }) => {
                 toast.error("Syllabus creation failed!!");
                 try {
                   const deleteSyllabus = storage.ref(
-                    `images/syllabus/${fileName}`
+                    `images/${process.env.NODE_ENV === "production" ? "production/" : ""}syllabus/${fileName}`
                   );
                   await deleteSyllabus.delete();
                   if (error.response.data.type === "TokenExpiredError") {

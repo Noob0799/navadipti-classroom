@@ -102,7 +102,7 @@ const View = () => {
         try {
           if (userObj.uploadedImages) {
             for (let file of userObj.uploadedImages) {
-              const deleteTask = storage.ref(`images/completedTask/${file.name}`);
+              const deleteTask = storage.ref(`images/${process.env.NODE_ENV === "production" ? "production/" : ""}completedTask/${file.name}`);
               await deleteTask.delete();
             }
           }

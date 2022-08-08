@@ -110,7 +110,7 @@ const View = () => {
           if (announcementObj.images && announcementObj.images.length) {
             for (let file of announcementObj.images) {
               const deleteAnnouncement = storage.ref(
-                `images/announcement/${file.name}`
+                `images/${process.env.NODE_ENV === "production" ? "production/" : ""}announcement/${file.name}`
               );
               await deleteAnnouncement.delete();
             }

@@ -56,7 +56,7 @@ const Create = ({ viewAnnouncement }) => {
             nameArr[1]
           }`;
           const uploadAnnouncement = storage
-            .ref(`images/announcement/${fileName}`)
+            .ref(`images/${process.env.NODE_ENV === "production" ? "production/" : ""}announcement/${fileName}`)
             .put(file);
           uploadAnnouncement.on(
             "state_changed",
@@ -67,7 +67,7 @@ const Create = ({ viewAnnouncement }) => {
             },
             async () => {
               url = await storage
-                .ref("images/announcement/")
+                .ref(`images/${process.env.NODE_ENV === "production" ? "production/" : ""}announcement/`)
                 .child(fileName)
                 .getDownloadURL();
               params.images.push({
@@ -101,7 +101,7 @@ const Create = ({ viewAnnouncement }) => {
                   toast.error("Announcement creation failed!!");
                   try {
                     const deleteAnnouncement = storage.ref(
-                      `images/announcement/${fileName}`
+                      `images/${process.env.NODE_ENV === "production" ? "production/" : ""}announcement/${fileName}`
                     );
                     await deleteAnnouncement.delete();
                     if (error.response.data.type === "TokenExpiredError") {

@@ -34,7 +34,7 @@ const TaskSubmissionModal = ({ show, close, id }) => {
           nameArr[1]
         }`;
         const uploadTask = storage
-          .ref(`images/completedTask/${fileName}`)
+          .ref(`images/${process.env.NODE_ENV === "production" ? "production/" : ""}completedTask/${fileName}`)
           .put(file);
         uploadTask.on(
           "state_changed",
@@ -44,7 +44,7 @@ const TaskSubmissionModal = ({ show, close, id }) => {
           },
           async () => {
             url = await storage
-              .ref("images/completedTask/")
+              .ref(`images/${process.env.NODE_ENV === "production" ? "production/" : ""}completedTask/`)
               .child(fileName)
               .getDownloadURL();
             params.images.push({
@@ -72,7 +72,7 @@ const TaskSubmissionModal = ({ show, close, id }) => {
                 console.log("Task submission failed!!", error);
                 try {
                   const deleteTask = storage.ref(
-                    `images/completedTask/${fileName}`
+                    `images/${process.env.NODE_ENV === "production" ? "production/" : ""}completedTask/${fileName}`
                   );
                   await deleteTask.delete();
                   if (error.response.data.type === "TokenExpiredError") {

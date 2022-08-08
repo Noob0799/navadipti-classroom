@@ -58,7 +58,7 @@ const Create = ({ viewTask }) => {
         const fileName = `${nameArr[0].slice(0, 10)}_${timeStamp}.${
           nameArr[1]
         }`;
-        const uploadTask = storage.ref(`images/task/${fileName}`).put(file);
+        const uploadTask = storage.ref(`images/${process.env.NODE_ENV === "production" ? "production/" : ""}task/${fileName}`).put(file);
         uploadTask.on(
           "state_changed",
           (snapshot) => {},
@@ -68,7 +68,7 @@ const Create = ({ viewTask }) => {
           },
           async () => {
             url = await storage
-              .ref("images/task/")
+              .ref(`images/${process.env.NODE_ENV === "production" ? "production/" : ""}task/`)
               .child(fileName)
               .getDownloadURL();
             params.images.push({
@@ -101,7 +101,7 @@ const Create = ({ viewTask }) => {
                 console.log("Task creation failed!!", error);
                 toast.error("Task creation failed!!");
                 try {
-                  const deleteTask = storage.ref(`images/task/${fileName}`);
+                  const deleteTask = storage.ref(`images/${process.env.NODE_ENV === "production" ? "production/" : ""}task/${fileName}`);
                   await deleteTask.delete();
                   if (error.response.data.type === "TokenExpiredError") {
                     toast.error("Session timeout. Please login again!!");
