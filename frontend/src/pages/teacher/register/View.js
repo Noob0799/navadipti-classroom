@@ -7,6 +7,7 @@ import Filter from "../../../components/filter/Filter";
 import Accordion from "react-bootstrap/Accordion";
 import Axios from "axios";
 import jwt_decode from "jwt-decode";
+import { storage } from "../../../firebase/index";
 
 const View = () => {
   const [isFetchingUsers, setIsFetchingUsers] = useState(false);
@@ -98,7 +99,26 @@ const View = () => {
       if (response.data.status === "Success") {
         console.log("User deleted successfully!!");
         toast.success("User deleted successfully!!");
-        getUsers();
+        try {
+          if (userObj.uploadedImages) {
+            for (let file of userObj.uploadedImages) {
+              const deleteTask = storage.ref(`images/completedTask/${file.name}`);
+              await deleteTask.delete();
+            }
+          }
+
+          getUsers();
+        } catch (err) {
+          console.log("Failed to delete image. Please contact admin!!");
+          toast.error("Failed to delete image. Please contact admin!!");
+          getUsers();
+          if (err.response.data.type === "TokenExpiredError") {
+            toast.error("Session timeout. Please login again!!");
+            setTimeout(() => {
+              navigate("/");
+            }, 2000);
+          }
+        }
       }
     } catch (error) {
       console.log("User deletion failed!!", error);

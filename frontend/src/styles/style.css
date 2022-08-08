@@ -12797,6 +12797,20 @@ fieldset:disabled .btn {
   padding: 0 5px;
 }
 
+.list-container .list-item .accordion-body .list-item-body div .list-item-label {
+  font-size: 16px;
+}
+
+.list-container .list-item .accordion-body .list-item-body div .list-item-value {
+  font-weight: 600;
+  font-size: 18px;
+  margin-left: 5px;
+}
+
+.list-container .list-item .accordion-body .list-item-body div .list-item-value.red-alert {
+  color: red;
+}
+
 .list-container .list-item .accordion-body .list-item-body div .list-item-body-btn {
   border: 2px solid black;
   font-weight: bold;
@@ -12809,6 +12823,12 @@ fieldset:disabled .btn {
     -webkit-box-direction: normal;
         -ms-flex-direction: column;
             flex-direction: column;
+  }
+  .list-container .list-item .accordion-body .list-item-body div .list-item-label {
+    font-size: 14px;
+  }
+  .list-container .list-item .accordion-body .list-item-body div .list-item-value {
+    font-size: 16px;
   }
   .list-container .list-item .accordion-body .list-item-body div .list-item-body-btn {
     font-size: 10px;
@@ -12874,7 +12894,27 @@ fieldset:disabled .btn {
   font-weight: 600;
 }
 
-.submission-modal-body {
+.submission-modal-body,
+.teacher-submission-modal-body {
   background-color: beige;
+}
+
+.submission-modal-body .teacher-submission-table,
+.teacher-submission-modal-body .teacher-submission-table {
+  text-align: center;
+}
+
+.submission-modal-body .teacher-submission-table .list-item-body-btn,
+.teacher-submission-modal-body .teacher-submission-table .list-item-body-btn {
+  border: 2px solid black;
+  font-weight: bold;
+  margin: 2px;
+}
+
+@media screen and (max-width: 523px) {
+  .submission-modal-body .teacher-submission-table .list-item-body-btn,
+  .teacher-submission-modal-body .teacher-submission-table .list-item-body-btn {
+    font-size: 10px;
+  }
 }
 /*# sourceMappingURL=style.css.map */

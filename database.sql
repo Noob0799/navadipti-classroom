@@ -6,6 +6,7 @@ CREATE TABLE student(
     student_id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
     student_name VARCHAR(255) NOT NULL,
     student_class VARCHAR(255) NOT NULL,
+    student_roll SMALLINT NOT NULL,
     student_phone BIGINT NOT NULL UNIQUE,
     student_password VARCHAR(255) NOT NULL
 );

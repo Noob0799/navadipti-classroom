@@ -79,8 +79,12 @@ router.get("/getTasks", async (req, res) => {
     const token = authorization.split(" ")[1];
     await pool.query("BEGIN");
     try {
-      const { role } = jwt.verify(token, process.env.SECRET_KEY);
-      if (role === "principal" || role === "teacher" || role === "student") {
+      const { role, id } = jwt.verify(token, process.env.SECRET_KEY);
+      if (
+        role === "principal" ||
+        role === "teacher" ||
+        (role === "student" && id)
+      ) {
         try {
           let list = {},
             filterString = "";
@@ -106,13 +110,16 @@ router.get("/getTasks", async (req, res) => {
             filterString += `term = '${term}'`;
           }
           let taskList = [],
-            taskData = [];
+            taskData = [],
+            submittedImageList = [];
           if (filterString) {
             taskList = await pool.query(
               `SELECT task_id, class, task_type, subject, term, due_date::varchar, instructions FROM task WHERE ${filterString}`
             );
           } else {
-            taskList = await pool.query(`SELECT task_id, class, task_type, subject, term, due_date::varchar, instructions FROM task`);
+            taskList = await pool.query(
+              `SELECT task_id, class, task_type, subject, term, due_date::varchar, instructions FROM task`
+            );
           }
           taskData = [...taskList.rows];
           taskList = [];
@@ -127,15 +134,48 @@ router.get("/getTasks", async (req, res) => {
                 src: row.image_url,
               };
             });
-            const submittedImageList = await pool.query(
-              `SELECT i.image_id, i.image_name, i.image_url FROM completedtaskimages t, images i WHERE t.image_id = i.image_id AND t.task_id = '${task.task_id}'`
+            if (role === "student" && id) {
+              submittedImageList = await pool.query(
+                `SELECT s.student_id, s.student_name, s.student_class, s.student_roll, i.image_id, i.image_name, i.image_url FROM completedtaskimages t, images i, student s WHERE t.image_id = i.image_id AND t.student_id = s.student_id AND t.task_id = '${task.task_id}' AND t.student_id = '${id}'`
+              );
+            } else if (role === "principal" || role === "teacher") {
+              submittedImageList = await pool.query(
+                `SELECT s.student_id, s.student_name, s.student_class, s.student_roll, i.image_id, i.image_name, i.image_url FROM completedtaskimages t, images i, student s WHERE t.image_id = i.image_id AND t.student_id = s.student_id AND t.task_id = '${task.task_id}'`
+              );
+            }
+            const submittedImageMap = new Map(),
+              studentDetailsMap = new Map(),
+              submittedImageData = [];
+            [...submittedImageList.rows].forEach(
+              (row) => {
+                let tempImageList = [], tempDetailsList = [];
+                if(submittedImageMap.has(row.student_id)) {
+                  tempImageList = submittedImageMap.get(row.student_id);
+                }
+                tempImageList.push({
+                  id: row.image_id,
+                  name: row.image_name,
+                  src: row.image_url
+                });
+                submittedImageMap.set(row.student_id, tempImageList);
+                if(studentDetailsMap.has(row.student_id)) {
+                  tempDetailsList = studentDetailsMap.get(row.student_id);
+                }
+                tempDetailsList.push({
+                  studentName: row.student_name,
+                  studentClass: row.student_class,
+                  studentRoll: row.student_roll
+                });
+                studentDetailsMap.set(row.student_id, tempDetailsList);
+              }
             );
-            const submittedImageData = [...submittedImageList.rows].map((row) => {
-              return {
-                id: row.image_id,
-                name: row.image_name,
-                src: row.image_url,
-              };
+            studentDetailsMap.forEach((studentDetailsArray, studentId) => {
+              let imageObj = submittedImageMap.get(studentId);
+              submittedImageData.push({
+                studentId,
+                ...studentDetailsArray[0],
+                images: [...imageObj]
+              });
             });
             taskList.push({
               id: task.task_id,
@@ -146,7 +186,7 @@ router.get("/getTasks", async (req, res) => {
               dueDate: task.due_date,
               instructions: task.instructions,
               images: [...taskImageData],
-              submittedImages: [...submittedImageData]
+              submittedImages: [...submittedImageData],
             });
           }
           await pool.query("COMMIT");
@@ -272,23 +312,21 @@ router.delete("/deleteTask", async (req, res) => {
 router.post("/submitTask", async (req, res) => {
   try {
     const { authorization } = req.headers;
-    const { id, images } = req.body;
+    const { taskId, images } = req.body;
     await pool.query("BEGIN");
     try {
       const token = authorization.split(" ")[1];
-      const { role } = jwt.verify(token, process.env.SECRET_KEY);
-      if (role === "student") {
+      const { role, id } = jwt.verify(token, process.env.SECRET_KEY);
+      if (role === "student" && id) {
         try {
-          const taskId = id;
-          console.log(id, images);
           for (let image of images) {
             const newImage = await pool.query(
               "INSERT INTO images (image_name, image_url) VALUES ($1, $2) RETURNING image_id",
               [image.name, image.url]
             );
             const completedTask = await pool.query(
-              "INSERT INTO completedtaskimages (task_id, image_id) VALUES ($1, $2) RETURNING task_image_id",
-              [taskId, newImage.rows[0].image_id]
+              "INSERT INTO completedtaskimages (task_id, image_id, student_id) VALUES ($1, $2, $3) RETURNING task_image_id",
+              [taskId, newImage.rows[0].image_id, id]
             );
           }
           await pool.query("COMMIT");

@@ -2,6 +2,7 @@ import { useState } from "react";
 import Accordion from "react-bootstrap/Accordion";
 import Button from "react-bootstrap/Button";
 import ImageViewerModal from "../imageViewerModal/ImageViewerModal";
+import TeacherSubmissionViewerModal from "../teacherSubmissionModal/TeacherSubmissionModal";
 import TaskSubmissionModal from "../tasksubmissionModal/TaskSubmissionModal";
 import ConfirmDeletionModal from "../confirmDeletionModal/ConfirmDeletionModal";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -10,16 +11,30 @@ import { faTrash } from "@fortawesome/free-solid-svg-icons";
 const AccordionItem = (props) => {
   const [showModal, setShowModal] = useState(false);
   const [showSubmissionModal, setShowSubmissionModal] = useState(false);
+  const [showTeacherSubmissionModal, setShowTeacherSubmissionModal] = useState(false);
   const [showDeletionModal, setShowDeletionModal] = useState(false);
-  const [option, setOption] = useState("task");
+  const [option, setOption] = useState("set");
 
   const handleShow = (option) => {
     setOption(option);
-    setShowModal(true);
+    if(option === "set") {
+      setShowModal(true);
+    } else {
+      setShowTeacherSubmissionModal(true);
+    }
   };
-  const handleClose = () => setShowModal(false);
+  const handleClose = () => {
+    if(option === "set") {
+      setShowModal(false);
+    } else {
+      setShowTeacherSubmissionModal(false);
+    }
+  }
   const handleSubmissionShow = () => setShowSubmissionModal(true);
-  const handleSubmissionClose = () => setShowSubmissionModal(false);
+  const handleSubmissionClose = () => {
+    setShowSubmissionModal(false);
+    props.getTasks();
+  }
   const handleDeletionClose = () => setShowDeletionModal(false);
   const handleDelete = (e) => {
     e.stopPropagation();
@@ -164,9 +179,9 @@ const AccordionItem = (props) => {
                     <Button
                       variant="warning"
                       className="list-item-body-btn"
-                      onClick={() => handleShow("task")}
+                      onClick={() => handleShow("set")}
                     >
-                      Task
+                      Images
                     </Button>
                   ) : null}
                 </div>
@@ -176,7 +191,12 @@ const AccordionItem = (props) => {
           <ImageViewerModal
             show={showModal}
             close={handleClose}
-            files={option === "task" ? props.images : props.submittedImages}
+            files={option === "set" ? props.images : props.submittedImages[0].images}
+          />
+          <TeacherSubmissionViewerModal
+            show={showTeacherSubmissionModal}
+            close={handleClose}
+            files={props.submittedImages ? props.submittedImages : []}
           />
           <TaskSubmissionModal
             show={showSubmissionModal}

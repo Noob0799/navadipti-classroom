@@ -252,6 +252,20 @@
   }
 }
 
-.submission-modal-body {
+.submission-modal-body,
+.teacher-submission-modal-body {
   background-color: beige;
+  .teacher-submission-table {
+    text-align: center;
+    .list-item-body-btn {
+      border: 2px solid black;
+      font-weight: bold;
+      margin: 2px;
+    }
+    @media screen and (max-width: 523px) {
+      .list-item-body-btn {
+        font-size: 10px;
+      }
+    }
+  }
 }

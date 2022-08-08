@@ -97,7 +97,7 @@ const TaskWork = () => {
           <Filter page="Task" filter={filter} />
           <Accordion defaultActiveKey="0" className="list-container">
             {taskList.map((task) => {
-              return <AccordionItem {...task} key={task.id} role={role} />;
+              return <AccordionItem {...task} key={task.id} role={role} getTasks={getTasks} />;
             })}
           </Accordion>
         </>

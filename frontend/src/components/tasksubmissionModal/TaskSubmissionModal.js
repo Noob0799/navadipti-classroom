@@ -25,7 +25,7 @@ const TaskSubmissionModal = ({ show, close, id }) => {
     if (!form.checkValidity()) {
       e.stopPropagation();
     } else {
-      params.id = id;
+      params.taskId = id;
       params.images = [];
       selectedImageFiles.forEach((file) => {
         const nameArr = file.name.split(".");
