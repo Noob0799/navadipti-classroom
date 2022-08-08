@@ -14,6 +14,7 @@ const Create = ({ viewUsers }) => {
   const navigate = useNavigate();
   const name = useRef("");
   const studentClass = useRef("Nursery");
+  const roll = useRef(1);
   const phoneNumber = useRef("");
   const password = useRef("");
 
@@ -42,19 +43,18 @@ const Create = ({ viewUsers }) => {
       setIsRegistering(true);
       params.identity = identity;
       params.name = name.current.value;
-      if(identity === "student") params.studentClass = studentClass.current.value;
+      if (identity === "student") {
+        params.studentClass = studentClass.current.value;
+        params.roll = roll.current.value;
+      }
       params.phoneNumber = phoneNumber.current.value;
       params.password = password.current.value;
       try {
-        response = await Axios.post(
-          `/auth/register`,
-          params,
-          {
-            headers: {
-              Authorization: `Bearer ${sessionStorage.getItem("token")}`,
-            },
-          }
-        );
+        response = await Axios.post(`/auth/register`, params, {
+          headers: {
+            Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+          },
+        });
         if (response.data.status === "Success") {
           console.log("User created successfully!!");
           toast.success("User created successfully!!");
@@ -66,13 +66,13 @@ const Create = ({ viewUsers }) => {
       } catch (error) {
         setIsRegistering(false);
         console.log("User creation failed!!", error);
-        toast.error("User creation failed!!");
+        toast.error(error && error.response && error.response.status === 409 ? error.response.data.message : "User creation failed!!");
         if (error.response.data.type === "TokenExpiredError") {
-            toast.error("Session timeout. Please login again!!");
-            setTimeout(() => {
-              navigate("/");
-            }, 2000);
-          }
+          toast.error("Session timeout. Please login again!!");
+          setTimeout(() => {
+            navigate("/");
+          }, 2000);
+        }
       }
     }
     setValidated(true);
@@ -88,7 +88,12 @@ const Create = ({ viewUsers }) => {
       >
         <Form.Group className="mb-3" controlId="formBasicName">
           <Form.Label>* Name:</Form.Label>
-          <Form.Control type="text" placeholder="Enter name" ref={name} required/>
+          <Form.Control
+            type="text"
+            placeholder="Enter name"
+            ref={name}
+            required
+          />
         </Form.Group>
         <Form.Group className="mb-3" controlId="validationCustomIdentity">
           <Form.Label className="form-label">* Identity:</Form.Label>
@@ -102,26 +107,54 @@ const Create = ({ viewUsers }) => {
           </Form.Select>
         </Form.Group>
         {identity === "student" && (
-          <Form.Group className="mb-3" controlId="validationCustomClass">
-            <Form.Label className="form-label">* Class:</Form.Label>
-            <Form.Select aria-label="Class" ref={studentClass} required>
-              <option value="Nursery">Nursery</option>
-              <option value="KG">KG</option>
-              <option value="Transition">Transition</option>
-              <option value="1">1</option>
-              <option value="2">2</option>
-              <option value="3">3</option>
-              <option value="4">4</option>
-            </Form.Select>
-          </Form.Group>
+          <>
+            <Form.Group className="mb-3" controlId="validationCustomClass">
+              <Form.Label className="form-label">* Class:</Form.Label>
+              <Form.Select aria-label="Class" ref={studentClass} required>
+                <option value="Nursery">Nursery</option>
+                <option value="KG">KG</option>
+                <option value="Transition">Transition</option>
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+              </Form.Select>
+            </Form.Group>
+            <Form.Group className="mb-3" controlId="formBasicRoll">
+              <Form.Label>* Roll Number:</Form.Label>
+              <Form.Control
+                type="number"
+                placeholder="Enter roll number"
+                min="1"
+                max="100"
+                ref={roll}
+                required
+              />
+              <Form.Control.Feedback type="invalid">
+                Roll number has to be within 1 and 100
+              </Form.Control.Feedback>
+            </Form.Group>
+          </>
         )}
         <Form.Group className="mb-3" controlId="formBasicPhone">
           <Form.Label>* Phone Number:</Form.Label>
-          <Form.Control type="text" placeholder="Enter phone number" autoComplete="off" ref={phoneNumber} required/>
+          <Form.Control
+            type="text"
+            placeholder="Enter phone number"
+            autoComplete="off"
+            ref={phoneNumber}
+            required
+          />
         </Form.Group>
         <Form.Group className="mb-3" controlId="formBasicPassworde">
           <Form.Label>* Password:</Form.Label>
-          <Form.Control type="password" placeholder="Enter password" autoComplete="off" ref={password} required/>
+          <Form.Control
+            type="password"
+            placeholder="Enter password"
+            autoComplete="off"
+            ref={password}
+            required
+          />
         </Form.Group>
         <div className="form-btn-container">
           <Button type="submit" variant="success" disabled={isRegistering}>

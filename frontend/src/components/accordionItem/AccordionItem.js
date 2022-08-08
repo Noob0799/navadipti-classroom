@@ -1,5 +1,6 @@
 import { useState } from "react";
 import Accordion from "react-bootstrap/Accordion";
+import Table from "react-bootstrap/Table";
 import Button from "react-bootstrap/Button";
 import ImageViewerModal from "../imageViewerModal/ImageViewerModal";
 import TeacherSubmissionViewerModal from "../teacherSubmissionModal/TeacherSubmissionModal";
@@ -11,30 +12,31 @@ import { faTrash } from "@fortawesome/free-solid-svg-icons";
 const AccordionItem = (props) => {
   const [showModal, setShowModal] = useState(false);
   const [showSubmissionModal, setShowSubmissionModal] = useState(false);
-  const [showTeacherSubmissionModal, setShowTeacherSubmissionModal] = useState(false);
+  const [showTeacherSubmissionModal, setShowTeacherSubmissionModal] =
+    useState(false);
   const [showDeletionModal, setShowDeletionModal] = useState(false);
   const [option, setOption] = useState("set");
 
   const handleShow = (option) => {
     setOption(option);
-    if(option === "set") {
+    if (option === "set") {
       setShowModal(true);
     } else {
       setShowTeacherSubmissionModal(true);
     }
   };
   const handleClose = () => {
-    if(option === "set") {
+    if (option === "set") {
       setShowModal(false);
     } else {
       setShowTeacherSubmissionModal(false);
     }
-  }
+  };
   const handleSubmissionShow = () => setShowSubmissionModal(true);
   const handleSubmissionClose = () => {
     setShowSubmissionModal(false);
     props.getTasks();
-  }
+  };
   const handleDeletionClose = () => setShowDeletionModal(false);
   const handleDelete = (e) => {
     e.stopPropagation();
@@ -79,6 +81,12 @@ const AccordionItem = (props) => {
                 <div>
                   <div className="list-item-label">Class:</div>{" "}
                   <div className="list-item-value">{props.class}</div>
+                </div>
+              )}
+              {props.roll && (
+                <div>
+                  <div className="list-item-label">Roll:</div>{" "}
+                  <div className="list-item-value">{props.roll}</div>
                 </div>
               )}
               <div>
@@ -191,7 +199,9 @@ const AccordionItem = (props) => {
           <ImageViewerModal
             show={showModal}
             close={handleClose}
-            files={option === "set" ? props.images : props.submittedImages[0].images}
+            files={
+              option === "set" ? props.images : props.submittedImages[0].images
+            }
           />
           <TeacherSubmissionViewerModal
             show={showTeacherSubmissionModal}

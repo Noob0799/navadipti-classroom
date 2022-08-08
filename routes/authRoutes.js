@@ -57,22 +57,32 @@ router.post("/validate", async (req, res) => {
 
 router.post("/register", async (req, res) => {
   try {
-    const { identity, name, studentClass, phoneNumber, password } = req.body;
+    const { identity, name, roll, studentClass, phoneNumber, password } = req.body;
     const { authorization } = req.headers;
     const token = authorization.split(" ")[1];
     await pool.query("BEGIN");
     try {
       const { role } = jwt.verify(token, process.env.SECRET_KEY);
       if (role === "principal") {
-        const user = await pool.query(
+        const userPhone = await pool.query(
           `SELECT * FROM ${identity} where ${identity}_phone = $1`,
           [phoneNumber]
         );
-        if (user.rows.length) {
+        const userRoll = await pool.query(
+          `SELECT * FROM ${identity} where ${identity}_class = $1 AND ${identity}_roll = $2`,
+          [studentClass, roll]
+        );
+        if (userPhone.rows.length) {
           await pool.query("ROLLBACK");
-          res.status(401).json({
+          res.status(409).json({
             status: "Failure",
             message: "User with provided phone number exists!!",
+          });
+        } else if (userRoll.rows.length) {
+          await pool.query("ROLLBACK");
+          res.status(409).json({
+            status: "Failure",
+            message: "Student with provided class and roll number exists!!",
           });
         } else {
           const saltRounds = 10;
@@ -84,9 +94,10 @@ router.post("/register", async (req, res) => {
               [identity, name, phoneNumber, hash]
             );
           } else {
+            console.log(name, studentClass, roll, phoneNumber, hash);
             await pool.query(
-              "INSERT INTO student (student_name, student_class, student_phone, student_password) VALUES ($1, $2, $3, $4)",
-              [name, studentClass, phoneNumber, hash]
+              "INSERT INTO student (student_name, student_class, student_roll, student_phone, student_password) VALUES ($1, $2, $3, $4, $5)",
+              [name, studentClass, roll, phoneNumber, hash]
             );
           }
           await pool.query("COMMIT");
@@ -176,6 +187,7 @@ router.get("/getUsers", async (req, res) => {
               student_id: student.student_id,
               student_name: student.student_name,
               student_class: student.student_class,
+              student_roll: student.student_roll,
               student_phone: student.student_phone,
               student_images: imageList
             });
@@ -198,6 +210,7 @@ router.get("/getUsers", async (req, res) => {
                 identity: "student",
                 name: user.student_name,
                 class: user.student_class,
+                roll: user.student_roll,
                 phone: user.student_phone,
                 uploadedImages: user.student_images
               });
