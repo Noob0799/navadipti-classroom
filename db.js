@@ -20,6 +20,12 @@ const pool = new Pool(
   process.env.NODE_ENV === "production" ? productionConfig : devConfig
 );
 
-pool.connect();
+// pg.Pool emits 'error' whenever a pooled connection drops unexpectedly
+// (Neon's serverless compute auto-suspends and recycles idle connections
+// routinely). Without a listener here, that event is unhandled and Node
+// kills the whole process on the next dropped connection.
+pool.on("error", (err) => {
+  console.error("Unexpected error on idle database client", err);
+});
 
 module.exports = pool;
