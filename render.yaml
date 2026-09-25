@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: navadipti-classroom
+    runtime: node
+    plan: free
+    branch: master
+    buildCommand: npm install && npm --prefix frontend install && npm --prefix frontend run build
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: SECRET_KEY
+        sync: false
+      - key: DATABASE_URL
+        sync: false
+      - key: VITE_FIREBASE_API_KEY
+        sync: false
