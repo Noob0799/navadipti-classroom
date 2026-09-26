@@ -12,6 +12,7 @@ import TeacherRegister from "./pages/teacher/register/Register";
 import StudentTaskWork from "./pages/student/taskWork/TaskWork";
 import StudentSyllabus from "./pages/student/syllabus/Syllabus";
 import StudentAnnouncement from "./pages/student/announcement/Announcement";
+import { ProtectedRoute } from "./routes/ProtectedRoute";
 
 const App = () => {
   return (
@@ -20,35 +21,67 @@ const App = () => {
         <Route path="/" element={<Welcome />} />
         <Route
           path="/landing"
-          element={<Landing ChildComponent={LandingOptions} />}
+          element={
+            <ProtectedRoute>
+              <Landing ChildComponent={LandingOptions} />
+            </ProtectedRoute>
+          }
         />
         <Route
           path="/teacher/taskWork"
-          element={<Wrapper ChildComponent={TeacherTaskWork} />}
+          element={
+            <ProtectedRoute allowedRoles={["principal", "teacher"]}>
+              <Wrapper ChildComponent={TeacherTaskWork} />
+            </ProtectedRoute>
+          }
         />
         <Route
           path="/teacher/syllabus"
-          element={<Wrapper ChildComponent={TeacherSyllabus} />}
+          element={
+            <ProtectedRoute allowedRoles={["principal", "teacher"]}>
+              <Wrapper ChildComponent={TeacherSyllabus} />
+            </ProtectedRoute>
+          }
         />
         <Route
           path="/teacher/announcement"
-          element={<Wrapper ChildComponent={TeacherAnnouncement} />}
+          element={
+            <ProtectedRoute allowedRoles={["principal", "teacher"]}>
+              <Wrapper ChildComponent={TeacherAnnouncement} />
+            </ProtectedRoute>
+          }
         />
         <Route
           path="/teacher/register"
-          element={<Wrapper ChildComponent={TeacherRegister} />}
+          element={
+            <ProtectedRoute allowedRoles={["principal"]}>
+              <Wrapper ChildComponent={TeacherRegister} />
+            </ProtectedRoute>
+          }
         />
         <Route
           path="/student/taskWork"
-          element={<Wrapper ChildComponent={StudentTaskWork} />}
+          element={
+            <ProtectedRoute allowedRoles={["student"]}>
+              <Wrapper ChildComponent={StudentTaskWork} />
+            </ProtectedRoute>
+          }
         />
         <Route
           path="/student/syllabus"
-          element={<Wrapper ChildComponent={StudentSyllabus} />}
+          element={
+            <ProtectedRoute allowedRoles={["student"]}>
+              <Wrapper ChildComponent={StudentSyllabus} />
+            </ProtectedRoute>
+          }
         />
         <Route
           path="/student/announcement"
-          element={<Wrapper ChildComponent={StudentAnnouncement} />}
+          element={
+            <ProtectedRoute allowedRoles={["student"]}>
+              <Wrapper ChildComponent={StudentAnnouncement} />
+            </ProtectedRoute>
+          }
         />
       </Routes>
       <ToastContainer

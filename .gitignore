@@ -12,6 +12,9 @@ node_modules
 /build
 /frontend/build
 
+# TypeScript incremental build cache
+*.tsbuildinfo
+
 # misc
 .DS_Store
 .env
